@@ -1,19 +1,9 @@
 # this is the most important file. Here we have a loop which recognize commends
 
-import torch
-import torchaudio
 import serial
 
 
-
-
-
-
-
-
-
-
-ser = serial.Serial('COM5', 9600)
+ser = serial.Serial('/dev/ttyACM0', 9600)
 
 
 while True:

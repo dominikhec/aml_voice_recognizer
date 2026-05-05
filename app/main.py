@@ -1,20 +1,15 @@
 # this is the most important file. Here we have a loop which recognize commends
 
-import serial
 
+# below we will import tensors of voice and then run them through the model and then we will send the output to arduino_comm.py file which will communicate with arduino and turn on or off the leds
 
-ser = serial.Serial('/dev/ttyACM0', 9600)
+import audio_stream
 
 
 while True:
-    decision = int(input("Wpisz '1' w celu włączenia ledów, albo wpisz '0' w celu wyłączenia ledów: "))
+    pass
 
-    if decision == 1:
-        ser.write(b'1')  # włącz LED
-    elif decision == 0:
-        ser.write(b'0')  # wyłącz LED
-    else:
-        break
+    
 
 
 

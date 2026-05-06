@@ -2,7 +2,7 @@
 
 import serial
 
-ser = serial.Serial('COM5', 9600)
+ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust the port as needed
 
 
 while True:

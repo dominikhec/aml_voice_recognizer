@@ -94,7 +94,7 @@ def load_twosec_google_speech_commands_for_training():
     google_dataset_for_training = []
 
 
-    print(len(dataset_google))
+    #print(len(dataset_google))
 
     for sample in dataset_google:
         

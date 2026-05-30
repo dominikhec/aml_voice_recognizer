@@ -2,9 +2,9 @@
 
 
 #import torchaudio
-from dataset_google_speech_commands import load_google_speech_commands_for_training
-from dataset_urban_sounds import load_urban_sounds_for_training
-from dataset_esc50 import load_esc50_for_training
+from training.onesec_google_speech_commands_dataset import load_google_speech_commands_for_training
+from training.onesec_urban_sounds_dataset import load_urban_sounds_for_training
+from training.onesec_esc50_dataset import load_esc50_for_training
 
 if __name__ == "__main__":
     

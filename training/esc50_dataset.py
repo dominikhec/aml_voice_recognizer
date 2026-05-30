@@ -1,0 +1,119 @@
+# here we weill load esc50 dataset, and here we will make little improvements over out data
+
+import matplotlib.pyplot as plt            
+import librosa 
+import os
+import numpy as np
+
+
+def load_onesec_esc50_for_training():
+    dataset_esc50 = []
+
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/audio_ESC50"
+
+    for file in os.listdir(folder):
+
+        full_path = os.path.join(folder, file)
+        if file.endswith(".wav"):
+            dataset_esc50.append({
+                "path": full_path
+            })
+
+    #print("Loaded:", len(dataset_esc50))
+
+
+    esc50_dataset_for_training = []
+
+    for sample in dataset_esc50:
+        
+        audio, sr = librosa.load(
+            sample["path"],
+            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
+            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+        )
+
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
+
+        while len(audio) >= 16000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (16000 próbek)
+            esc50_dataset_for_training.append(audio[:16000])  # jeśli tak, to bierzemy pierwsze 16000 próbek
+            audio = audio[16000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+
+
+    return esc50_dataset_for_training  
+
+
+'''
+data = load_onesec_esc50_for_training()
+
+print("Loaded:", len(data))
+
+audio= data[0]
+
+
+print("Audio:", audio)
+print("Total Samples in Audio:", len(audio))
+
+
+plt.plot(audio)
+plt.grid(True)
+plt.xlabel("Sample Index")
+plt.ylabel("Amplitude")
+plt.title("Audio Waveform")
+plt.show()
+'''
+
+def load_twosec_esc50_for_training():
+    dataset_esc50 = []
+
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/audio_ESC50"
+
+    for file in os.listdir(folder):
+
+        full_path = os.path.join(folder, file)
+        if file.endswith(".wav"):
+            dataset_esc50.append({
+                "path": full_path
+            })
+
+    #print("Loaded:", len(dataset_esc50))
+
+
+    esc50_dataset_for_training = []
+
+    for sample in dataset_esc50:
+        
+        audio, sr = librosa.load(
+            sample["path"],
+            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
+            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+        )
+
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
+
+        while len(audio) >= 32000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
+            esc50_dataset_for_training.append(audio[:32000])  # jeśli tak, to bierzemy pierwsze 32000 próbek
+            audio = audio[32000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+
+
+    return esc50_dataset_for_training  
+
+
+'''
+data = load_twosec_esc50_for_training()
+
+print("Loaded:", len(data))
+
+audio= data[0]
+
+
+print("Audio:", audio)
+print("Total Samples in Audio:", len(audio))
+
+
+plt.plot(audio)
+plt.grid(True)
+plt.xlabel("Sample Index")
+plt.ylabel("Amplitude")
+plt.title("Audio Waveform")
+plt.show()
+'''

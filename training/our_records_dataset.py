@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 
-audio, sampling_rate = torchaudio.load("/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/test_python.wav")
+audio, sampling_rate = torchaudio.load("/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/JARVIS/1.wav")
 
 audio = audio.mean(dim=0)   # ze względu na to, że audio jest stereo, a my chcemy mono, bierzemy średnią z obu kanałów
 

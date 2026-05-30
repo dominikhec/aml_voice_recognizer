@@ -110,7 +110,7 @@ def load_twosec_urban_sounds_for_training():
 
     return urban_sounds_dataset_for_training  
 
-
+'''
 data = load_twosec_urban_sounds_for_training()
 
 print("Loaded:", len(data))
@@ -129,3 +129,4 @@ plt.ylabel("Amplitude")
 plt.title("Audio Waveform")
 plt.show()
 
+'''

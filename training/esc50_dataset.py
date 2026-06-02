@@ -9,7 +9,7 @@ import numpy as np
 def load_onesec_esc50_for_training():
     dataset_esc50 = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/audio_ESC50"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/audio_ESC50"
 
     for file in os.listdir(folder):
 
@@ -65,7 +65,7 @@ plt.show()
 def load_twosec_esc50_for_training():
     dataset_esc50 = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/audio_ESC50"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/audio_ESC50"
 
     for file in os.listdir(folder):
 

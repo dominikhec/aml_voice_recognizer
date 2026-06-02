@@ -9,7 +9,7 @@ import numpy as np
 def load_onesec_urban_sounds_for_training():
     dataset_urban_sounds = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/urban_sounds"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/urban_sounds"
 
     for label in os.listdir(folder):
 
@@ -71,7 +71,7 @@ plt.show()
 def load_twosec_urban_sounds_for_training():
     dataset_urban_sounds = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/urban_sounds"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/urban_sounds"
 
     for label in os.listdir(folder):
 

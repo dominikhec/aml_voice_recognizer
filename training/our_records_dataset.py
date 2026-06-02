@@ -10,7 +10,7 @@ import numpy as np
 def load_JARVIS_records_for_training():
     dataset_JARVIS = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/JARVIS"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/JARVIS"
 
     for file in os.listdir(folder):
 
@@ -76,7 +76,7 @@ plt.show()
 def load_turn_on_records_for_training():
     dataset_turnon = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/turn_on_leds"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/turn_on_leds"
 
     for file in os.listdir(folder):
 
@@ -144,7 +144,7 @@ plt.show()
 def load_switch_off_records_for_training():
     dataset_switchoff = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/switch_off_leds"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/switch_off_leds"
 
     for file in os.listdir(folder):
 

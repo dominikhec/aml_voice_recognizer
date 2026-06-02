@@ -11,7 +11,7 @@ import numpy as np
 def load_JARVIS_records_for_evaluation():
     dataset_JARVIS = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation_onesec_data/JARVIS"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation/evaluation_onesec_data/JARVIS"
 
     for file in os.listdir(folder):
 
@@ -77,7 +77,7 @@ plt.show()
 def load_turn_on_records_for_evaluation():
     dataset_turnon = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation_twosec_data/turn_on"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation/evaluation_twosec_data/turn_on"
 
     for file in os.listdir(folder):
 
@@ -142,7 +142,7 @@ plt.show()
 def load_switch_off_records_for_evaluation():
     dataset_switchoff = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation_twosec_data/switch_off"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation/evaluation_twosec_data/switch_off"
 
     for file in os.listdir(folder):
 
@@ -206,7 +206,7 @@ plt.show()
 def load_background_onesec_records_for_evaluation():
     dataset_background = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation_onesec_data/background_noise"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation/evaluation_onesec_data/background_noise"
 
     for file in os.listdir(folder):
 
@@ -273,7 +273,7 @@ plt.show()
 def load_background_twosec_records_for_evaluation():
     dataset_background = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation_twosec_data/background_noise"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/evaluation/evaluation_twosec_data/background_noise"
 
     for file in os.listdir(folder):
 

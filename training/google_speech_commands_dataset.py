@@ -14,7 +14,7 @@ import math
 def load_onesec_google_speech_commands_for_training():
     dataset_google = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/google_speech_commands"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/google_speech_commands"
 
     for label in os.listdir(folder):
 
@@ -73,7 +73,7 @@ plt.show()
 def load_twosec_google_speech_commands_for_training():
     dataset_google = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/google_speech_commands"
+    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/google_speech_commands"
 
     for label in os.listdir(folder):
 

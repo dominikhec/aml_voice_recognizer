@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import librosa 
 import os
 import numpy as np  
+import random
+from torchaudio import transforms
+import torch
 
 
 # importing JARVIS records for evaluation (one second) ===================================================================================
@@ -45,7 +48,37 @@ def load_JARVIS_records_for_evaluation():
             JARVIS_dataset_for_evaluation.append(audio_padded)
             #print("Długość", len(audio_padded)/16000, "sekund")
 
-    return JARVIS_dataset_for_evaluation 
+    JARVIS_dataset_for_evaluation = np.asarray(JARVIS_dataset_for_evaluation, dtype=np.float32)
+
+    JARVIS_dataset_for_evaluation = [(sample, 1) for sample in JARVIS_dataset_for_evaluation]
+
+    random.shuffle(JARVIS_dataset_for_evaluation)
+
+    mel_transform = transforms.MelSpectrogram(
+        sample_rate=16000,
+        n_fft=1024,
+        hop_length=512,
+        n_mels=64
+    )
+
+    db_transform = transforms.AmplitudeToDB()
+
+    evaluation_dataset = []
+
+    for audio, label in JARVIS_dataset_for_evaluation:
+
+        audio = torch.tensor(audio, dtype=torch.float32)
+
+        mel = mel_transform(audio)
+
+        mel = db_transform(mel)
+
+        mel = mel.unsqueeze(0)
+
+        evaluation_dataset.append((mel, label))
+
+
+    return evaluation_dataset 
 
 '''
 
@@ -110,6 +143,7 @@ def load_turn_on_records_for_evaluation():
             audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
             turnon_dataset_for_evaluation.append(audio_padded)
             #print("Długość", len(audio_padded)/32000, "sekund")
+
 
     return turnon_dataset_for_evaluation 
 
@@ -242,7 +276,38 @@ def load_background_onesec_records_for_evaluation():
         background_dataset_for_evaluation.append(audio_padded)
         #print("Długość", len(audio_padded)/16000, "sekund")
 
-    return background_dataset_for_evaluation 
+    background_dataset_for_evaluation = np.asarray(background_dataset_for_evaluation, dtype=np.float32)
+
+    background_dataset_for_evaluation = [(sample, 0) for sample in background_dataset_for_evaluation]
+
+    random.shuffle(background_dataset_for_evaluation)
+
+    mel_transform = transforms.MelSpectrogram(
+        sample_rate=16000,
+        n_fft=1024,
+        hop_length=512,
+        n_mels=64
+    )
+
+    db_transform = transforms.AmplitudeToDB()
+
+    evaluation_dataset = []
+
+    for audio, label in background_dataset_for_evaluation:
+
+        audio = torch.tensor(audio, dtype=torch.float32)
+
+        mel = mel_transform(audio)
+
+        mel = db_transform(mel)
+
+        mel = mel.unsqueeze(0)
+
+        evaluation_dataset.append((mel, label))
+
+
+    return evaluation_dataset 
+
 
 
 '''

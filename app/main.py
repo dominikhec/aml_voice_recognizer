@@ -12,21 +12,23 @@ t = threading.Thread(target=audio_stream.start_stream)
 t.start()
 
 
-plt.ion()  # interactive mode dla plotu
+#plt.ion()  # interactive mode dla plotu
 
-fig, ax = plt.subplots()    # tworzymy figure i axis dla naszego plotu
+#fig, ax = plt.subplots()    # tworzymy figure i axis dla naszego plotu
 
-x = np.arange(16000)        # zmienna x reprezentująca 1 sekundę
-line, = ax.plot(x, np.zeros(16000))     # inicjalizujemy linię z zerami
+#x = np.arange(16000)        # zmienna x reprezentująca 1 sekundę
+#line, = ax.plot(x, np.zeros(16000))     # inicjalizujemy linię z zerami
 
-ax.set_ylim(-1, 1)      # ograniczenia na osi y (normalizacja do [-1, 1])
-ax.set_title("Live microphone signal")  # tytuł wykresu
+#ax.set_ylim(-1, 1)      # ograniczenia na osi y (normalizacja do [-1, 1])
+#ax.set_title("Live microphone signal")  # tytuł wykresu
 
 
 while True:     # główna pętla programu, która będzie czekać na nowe dane z mikrofonu i aktualizować wykres
-    data = audio_stream.audio_queue.get()       # czekamy aż pojawią się nowe dane z mikrofonu (1 sekunda audio)
+    temp = audio_stream.audio_queue.get()       # czekamy aż pojawią się nowe dane z mikrofonu (1 sekunda audio)
+    data, prediction = temp  # rozpakowujemy dane i predykcję modelu
+    print(f"Prediction: {prediction:.3f}")  # wypisujemy predykcję modelu (0 lub 1)
 
-    line.set_ydata(data)   # podmieniamy stare dane na nowe    
+#    line.set_ydata(data)   # podmieniamy stare dane na nowe    
 
     plt.pause(0.01)        # pozwala matplotlibowi odświeżyć GUI
 

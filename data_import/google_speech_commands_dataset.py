@@ -44,6 +44,11 @@ def load_onesec_google_speech_commands_for_training():
 
         audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio
 
+        if len(audio) > 16000:
+            audio = audio[:16000]
+        else:
+            audio = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  # dopełniamy audio zerami do 1 sekundy
+            
         google_dataset_for_training.append(audio)
 
 
@@ -52,6 +57,12 @@ def load_onesec_google_speech_commands_for_training():
 
 '''
 data = load_onesec_google_speech_commands_for_training()
+
+lengths = [len(sample) for sample in data]
+
+print("min:", min(lengths))
+print("max:", max(lengths))
+print("unique:", sorted(set(lengths))[:20])
 
 print("Loaded:", len(data))
 
@@ -69,6 +80,7 @@ plt.ylabel("Amplitude")
 plt.title("Audio Waveform")
 plt.show()
 '''
+
 
 def load_twosec_google_speech_commands_for_training():
     dataset_google = []
@@ -106,6 +118,7 @@ def load_twosec_google_speech_commands_for_training():
 
         audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio
 
+    
         google_dataset_for_training.append(audio)
     
 
@@ -120,6 +133,11 @@ def load_twosec_google_speech_commands_for_training():
             )
         )
 
+        if len(merged_audio) > 32000:
+            merged_audio = merged_audio[:32000]
+        else:
+            merged_audio = np.pad(merged_audio, (0, 32000 - len(merged_audio)), mode='constant')  # dopełniamy audio zerami do 1 sekundy
+            
         google_dataset_for_training_1.append(merged_audio)
 
     return google_dataset_for_training_1  
@@ -127,6 +145,12 @@ def load_twosec_google_speech_commands_for_training():
 
 '''
 data = load_twosec_google_speech_commands_for_training()
+
+lengths = [len(sample) for sample in data]
+
+print("min:", min(lengths))
+print("max:", max(lengths))
+print("unique:", sorted(set(lengths))[:20])
 
 print("Loaded:", len(data))
 

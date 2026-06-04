@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     def twosec_data_import():
         
-        google_dataset = load_twosec_google_speech_commands_for_training()
+        google_dataset = np.asarray(load_twosec_google_speech_commands_for_training(), dtype = np.float32)
         urban_sounds_dataset = load_twosec_urban_sounds_for_training()
         esc50_dataset = load_twosec_esc50_for_training()
         turn_on_dataset = load_turn_on_records_for_training()
@@ -72,3 +72,44 @@ if __name__ == "__main__":
 
 
 
+
+# Należy pobrać:
+# 360 własnych nagrań (turn on the leds)
+# 360 własnych nagrań (switch off the leds)
+# 6930 nagrań z Google Speech Commands
+# 550 nagrań z Urban Sounds
+# 550 nagrań z ESC50
+# 1100 nagrań ciszy
+# 1650 nagrań pokoju jak się coś dzieje
+# 1100 nagrań czytania
+
+
+# Struktura danych:
+
+# Do trenowania modelu
+
+# 300 nagrań własnych (turn on), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 18 = 5400)
+# 300 nagrań własnych (switch off), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 18 = 5400)
+# 6300 nagrań z Google Speech Commands
+# 500 nagrań z Urban Sounds
+# 500 nagrań z ESC50 
+# 1000 nagrań ciszy
+# 1500 nagrań pokoju jak się coś dzieje
+# 1000 nagrań czytania
+
+# suma (turn on + switch off) = 10800
+# suma (bez JARVIS) = 900 + 6300 + 500 + 500 + 1000 + 1600 = 10800
+
+
+# Do validacji modelu
+
+# 60 własnych nagrań turn on zostawić do validacji na koniec
+# 60 własnych nagrań switch off zostawić do validacji na koniec   
+# 630 nagrań z Google Speech Commands
+# 50 nagrań z urban sounds
+# 50 nagrań z ESC50
+# 100 nagrań ciszy
+# 150 nagrań pokoju jak się coś dzieje
+# 100 nagrań czytania
+
+# suma do validacji = 60 + 60 + 90 + 630 + 50 + 50 + 100 + 160 = 1200

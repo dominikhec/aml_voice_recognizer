@@ -10,8 +10,7 @@ project_root = os.path.dirname(
 sys.path.append(project_root)
 
 from evaluation_datasets_import import load_JARVIS_records_for_evaluation, load_background_onesec_records_for_evaluation
-from models.wake_word_model import SimpleCNN
-
+from models.wake_word_model import *
 import torch
 import random
 from torch.utils.data import DataLoader
@@ -29,7 +28,8 @@ if __name__ == "__main__":
     #print("Length of JARVI for evaluation:", len(JARVIS))
     #print("Length of background records for evaluation:", len(background))
 
-    model = SimpleCNN()
+    #model = SimpleCNN()
+    model = CRNN()
     model.load_state_dict(torch.load("wake_word_model.pth"))
     model.eval()
 

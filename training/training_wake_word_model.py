@@ -10,7 +10,7 @@ project_root = os.path.dirname(
 sys.path.append(project_root)
 
 from data_import.onesec_data_import import onesec_data_import
-from models.wake_word_model import SimpleCNN
+from models.wake_word_model import *
 
 import torch
 from torch.utils.data import DataLoader
@@ -33,7 +33,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-    model = SimpleCNN().to(device)  
+    #model = SimpleCNN().to(device)  
+    model = CRNN().to(device)
 
     l_r = 0.001
     bs = 32
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 
     print(f"Now testing for learning rate: {l_r} and batch size: {bs}")
 
-    for epoch in range(20):
+    for epoch in range(5):
         model.train()   #ustawiamy nasz model na tryb treningowy (jest to istotne dla warstw takich jak Dropout czy BatchNorm)
         running_loss = 0.0  #zmienna pomocnicza służąca do sumowania strat w każdej epoce
 

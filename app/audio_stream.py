@@ -9,7 +9,7 @@ project_root = os.path.dirname(
 
 sys.path.append(project_root)
 
-from models.wake_word_model import SimpleCNN
+from models.wake_word_model import *
 import sounddevice as sd
 import numpy as np
 import queue
@@ -19,9 +19,11 @@ from torchaudio import transforms
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # model import:
-model = SimpleCNN()
+#model = SimpleCNN()
+model = CRNN()
 model.load_state_dict(torch.load("wake_word_model.pth", map_location=device))
-model = SimpleCNN().to(device)
+#model = SimpleCNN().to(device)
+model = CRNN()
 model.eval()
 
 

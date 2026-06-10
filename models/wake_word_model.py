@@ -41,6 +41,7 @@ class CRNN(nn.Module):
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(2),
+            nn.Dropout2d(0.25),
             
             nn.Conv2d(64, 128, 3, padding=1),
             nn.BatchNorm2d(128),
@@ -53,7 +54,8 @@ class CRNN(nn.Module):
             nn.Conv2d(256, 256, 3, padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
-            nn.MaxPool2d(2)
+            nn.MaxPool2d(2),
+            nn.Dropout2d(0.25)
         )
 
         self.bilstm1 = nn.LSTM(256 * 8, 256, bidirectional=True, batch_first=True)

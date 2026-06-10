@@ -35,60 +35,44 @@ class SimpleCNN(nn.Module):
 
 
 class CRNN(nn.Module):
-
     def __init__(self):
         super().__init__()
         
-        self.conv1 = nn.Conv2d(1, 64, 3, padding=1)
-        self.pool1 = nn.MaxPool2d(2)
-
-        self.conv2 = nn.Conv2d(64, 128, 3, padding=1)
-        self.pool2 = nn.MaxPool2d(2)
-
-        self.conv3 = nn.Conv2d(128, 256, 3, padding=1)
-        self.conv4 = nn.Conv2d(256, 256, 3, padding=1)
-        self.pool3 = nn.MaxPool2d(2)
-
-
-        self.bilstm1 = nn.LSTM(
-            input_size=256 * 8,
-            hidden_size=256,
-            bidirectional=True,
-            batch_first=True
+        # Dodanie BatchNorm dla stabilności
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 64, 3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            
+            nn.Conv2d(64, 128, 3, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            
+            nn.Conv2d(128, 256, 3, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, 3, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
         )
 
-        self.bilstm2 = nn.LSTM(
-            input_size=512,
-            hidden_size=256,
-            bidirectional=True,
-            batch_first=True
-        )
-
+        self.bilstm1 = nn.LSTM(256 * 8, 256, bidirectional=True, batch_first=True)
+        self.bilstm2 = nn.LSTM(512, 256, bidirectional=True, batch_first=True)
         self.fc = nn.Linear(512, 2)
 
     def forward(self, x):
-
-        x = F.relu(self.conv1(x))
-        x = self.pool1(x)
-
-        x = F.relu(self.conv2(x))
-        x = self.pool2(x)
-
-        x = F.relu(self.conv3(x))
-        x = F.relu(self.conv4(x))
-        x = self.pool3(x)
-
+        x = self.features(x)
         B, C, H, W = x.shape
-
-        x = x.permute(0, 3, 1, 2)
-        x = x.reshape(B, W, C * H)
-
+        x = x.permute(0, 3, 2, 1).contiguous().view(B, W, C * H)
+        
         x, _ = self.bilstm1(x)
         x, _ = self.bilstm2(x)
-
-        x = x.mean(dim=1)
-        x = self.fc(x)
-
-        return x
+        
+        # Global Average Pooling po wymiarze czasowym
+        x = x.mean(dim=1) 
+        return self.fc(x)
 
 

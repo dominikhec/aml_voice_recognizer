@@ -32,18 +32,7 @@ class SimpleCNN(nn.Module):
         return x
     
 
-class Attention(nn.Module):
-    def __init__(self, hidden_size):
-        super(Attention, self).__init__()
-        self.attn = nn.Linear(hidden_size, 1)
 
-    def forward(self, x):
-        # x: [batch, seq_len, hidden_size]
-        # Obliczamy wagę ważności dla każdego kroku czasowego
-        weights = torch.softmax(self.attn(x), dim=1) 
-        # Ważona suma: [batch, hidden_size]
-        context = torch.sum(x * weights, dim=1)      
-        return context
 
 class CRNN(nn.Module):
 
@@ -75,8 +64,6 @@ class CRNN(nn.Module):
             batch_first=True
         )
 
-        self.attention = Attention(512)
-
         self.fc = nn.Linear(512, 2)
 
     def forward(self, x):
@@ -99,7 +86,9 @@ class CRNN(nn.Module):
         x, _ = self.bilstm1(x)
         x, _ = self.bilstm2(x)
 
-        x = self.attention(x)
-        return self.fc(x)
+        x = x.mean(dim=1)
+        x = self.fc(x)
+
+        return x
 
 

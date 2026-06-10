@@ -30,7 +30,19 @@ class SimpleCNN(nn.Module):
         x = self.fc2(x)
 
         return x
-    
+
+class Attention(nn.Module):
+    def __init__(self, hidden_size):
+        super(Attention, self).__init__()
+        self.attn = nn.Linear(hidden_size, 1)
+
+    def forward(self, x):
+        # x: [batch, seq_len, hidden_size]
+        # Obliczamy wagę ważności dla każdego kroku czasowego
+        weights = torch.softmax(self.attn(x), dim=1) 
+        # Ważona suma: [batch, hidden_size]
+        context = torch.sum(x * weights, dim=1)      
+        return context 
 
 class CRNN(nn.Module):
     def __init__(self):
@@ -46,10 +58,7 @@ class CRNN(nn.Module):
             nn.Conv2d(64, 128, 3, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
-
-            nn.Conv2d(128, 128, 3, padding=1),
-            nn.BatchNorm2d(128),
-            nn.ReLU(),
+            nn.MaxPool2d(2),
             
             nn.Conv2d(128, 256, 3, padding=1),
             nn.BatchNorm2d(256),
@@ -61,8 +70,11 @@ class CRNN(nn.Module):
             nn.Dropout2d(0.25)
         )
 
-        self.bilstm1 = nn.LSTM(256 * 16, 256, bidirectional=True, batch_first=True)
-        self.bilstm2 = nn.LSTM(512, 256, bidirectional=True, batch_first=True)
+        self.lstm1 = nn.LSTM(..., 256, batch_first=True)
+        self.lstm2 = nn.LSTM(256, 256, batch_first=True)
+
+        self.attention = Attention(512)
+
         self.fc = nn.Linear(512, 2)
 
     def forward(self, x):
@@ -70,10 +82,11 @@ class CRNN(nn.Module):
         B, C, H, W = x.shape
         x = x.permute(0, 3, 2, 1).contiguous().view(B, W, C * H)
         
-        x, _ = self.bilstm1(x)
-        x, _ = self.bilstm2(x)
+        x, _ = self.lstm1(x)
+        x, _ = self.lstm2(x)
+
+        x = self.attention(x)
         
-        x = x.mean(dim=1) 
         return self.fc(x)
 
 

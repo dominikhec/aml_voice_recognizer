@@ -61,20 +61,30 @@ class CRNN(nn.Module):
             nn.Dropout(.25)
         )
 
-        self.bilstm1 = nn.LSTM(256 * 8, 256, bidirectional=True, batch_first=True)
-        self.bilstm2 = nn.LSTM(512, 256, bidirectional=True, batch_first=True)
+        self.gru1 = nn.GRU(256 * 8, 256, batch_first=True)
+        self.gru2 = nn.GRU(256, 256, batch_first=True)
         self.fc = nn.Linear(512, 2)
+
+        self.attention = nn.Sequential(
+            nn.Linear(512, 128),
+            nn.Tanh(),
+            nn.Linear(128, 1)
+        )
 
     def forward(self, x):
         x = self.features(x)
         B, C, H, W = x.shape
         x = x.permute(0, 3, 2, 1).contiguous().view(B, W, C * H)
         
-        x, _ = self.bilstm1(x)
-        x, _ = self.bilstm2(x)
+        x, _ = self.gru1(x)
+        x, _ = self.gru2(x)
         
-        # Global Average Pooling po wymiarze czasowym
-        x = x.mean(dim=1) 
+        weights = torch.softmax(
+            self.attention(x),
+            dim=1
+        )
+
+        x = (weights * x).sum(dim=1)
         return self.fc(x)
 
 

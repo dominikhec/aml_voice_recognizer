@@ -62,7 +62,7 @@ class CRNN(nn.Module):
         )
 
         self.gru1 = nn.GRU(256 * 8, 256, batch_first=True)
-        self.gru2 = nn.GRU(256, 256, batch_first=True)
+        self.gru2 = nn.GRU(256, 512, batch_first=True)
         self.fc = nn.Linear(512, 2)
 
         self.attention = nn.Sequential(

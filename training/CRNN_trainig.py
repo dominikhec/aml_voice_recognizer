@@ -136,8 +136,8 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
     #model = SimpleCNN().to(device)  
     model = CRNN().to(device)
 
-    l_r = 0.001
-    bs = 32
+    l_r = 1e-3
+    bs = bs
     # Below I create two data loader respectively one for train dataset and one for test dataset
     train_loader = DataLoader(training_set, batch_size = bs, shuffle = True)
     test_loader = DataLoader(validation_set, batch_size = bs, shuffle = False)
@@ -146,7 +146,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
     optimizer = optim.AdamW(
         model.parameters(),
         lr=1e-3,
-        weight_decay=1e-4
+        weight_decay=weight_decay
     )
 
     criterion = nn.CrossEntropyLoss()
@@ -205,7 +205,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
                 correct += (predicted == target).sum().item()
 
         accuracy = 100 * correct / total
-        print(f"Test Accuracy for learning rate: {l_r} and batch size: {bs}: {accuracy:.5f}%")
+        print(f"Test Accuracy for weight decay: {weight_decay} and batch size: {bs}: {accuracy:.5f}%")
 
         scheduler.step(accuracy)
 
@@ -218,7 +218,5 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
     print(f"Final loss for lr={l_r}, bs={bs}: {epoch_loss:.4f}")
     print(f"Final accuracy for lr={l_r}, bs={bs}: {accuracy:.5f}%")
 
-
-
-
+    torch.save(model.state_dict(), f"wake_word_model_wd_{str(weight_decay).replace('.',',')}_bs_{bs}.pth")
 

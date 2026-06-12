@@ -32,7 +32,7 @@ class SimpleCNN(nn.Module):
         return x
     
 
-class CRNN(nn.Module):
+class CRNN_wake_word(nn.Module):
     def __init__(self, out_channels=2):
         super().__init__()
         

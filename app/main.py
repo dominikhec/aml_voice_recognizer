@@ -7,6 +7,9 @@ import threading
 import audio_stream
 import matplotlib.pyplot as plt
 import numpy as np
+import serial
+
+ser = serial.Serial('/dev/ttyACM0', 9600)  
 
 t = threading.Thread(target=audio_stream.start_stream)
 t.start()
@@ -30,10 +33,14 @@ while True:     # główna pętla programu, która będzie czekać na nowe dane 
     print(f"Prediction: {prediction:.3f}")  # wypisujemy predykcję modelu (0 lub 1)
 
     line.set_ydata(raw_data)   # podmieniamy stare dane na nowe    
+    
     if prediction < 0.05: 
         line.set_color('b')
+        ser.write(b'0')  # włącz LED
     else:
         line.set_color('r')
+        ser.write(b'1')  # wyłącz LED
+    
 
     plt.pause(0.01)        # pozwala matplotlibowi odświeżyć GUI
 

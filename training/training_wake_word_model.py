@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
 
     #model = SimpleCNN().to(device)  
-    model = CRNN().to(device)
+    model = CRNN_wake_word().to(device)
 
     l_r = 0.001
     bs = 32

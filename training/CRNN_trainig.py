@@ -119,6 +119,6 @@ if __name__ == "__main__":
     print(f"Final accuracy for lr={l_r}, bs={bs}: {accuracy:.5f}%")
 
 
-    torch.save(model.state_dict(), "wake_word_model.pth")
+    torch.save(model.state_dict(), "wake_word_model_2.pth")
 
 

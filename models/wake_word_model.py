@@ -32,8 +32,6 @@ class SimpleCNN(nn.Module):
         return x
     
 
-
-
 class CRNN(nn.Module):
     def __init__(self):
         super().__init__()

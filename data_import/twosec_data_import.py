@@ -242,43 +242,48 @@ def twosec_data_import():
 
 
 
+
 # Należy pobrać:
 # 360 własnych nagrań (turn on the leds)
 # 360 własnych nagrań (switch off the leds)
-# 6930 nagrań z Google Speech Commands
-# 550 nagrań z Urban Sounds
-# 550 nagrań z ESC50
+# 13230 nagrań z Google Speech Commands
+# 1050 nagrań z Urban Sounds
+# 1050 nagrań z ESC50
 # 1100 nagrań ciszy
 # 1650 nagrań pokoju jak się coś dzieje
 # 1100 nagrań czytania
+# 3850 nagrań z rozmów w salonie
 
 
 # Struktura danych:
 
 # Do trenowania modelu
 
-# 300 nagrań własnych (turn on), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 18 = 5400)
-# 300 nagrań własnych (switch off), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 18 = 5400)
-# 6300 nagrań z Google Speech Commands
-# 500 nagrań z Urban Sounds
-# 500 nagrań z ESC50 
+# 300 nagrań własnych (turn on), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
+# 300 nagrań własnych (switch off), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
+# 12600 nagrań z Google Speech Commands
+# 1000 nagrań z Urban Sounds
+# 1000 nagrań z ESC50 
 # 1000 nagrań ciszy
 # 1500 nagrań pokoju jak się coś dzieje
 # 1000 nagrań czytania
+# 3500 nagrań z rozmów w salonie
 
-# suma (turn on + switch off) = 10800
-# suma (bez JARVIS) = 900 + 6300 + 500 + 500 + 1000 + 1600 = 10800
+# suma (turn_on+ switch off) = 21600
+# suma (bez JARVIS) = 900 + 6300 + 500 + 500 + 1000 + 1600 = 21600
+# razem 43200
 
 
 # Do validacji modelu
 
 # 60 własnych nagrań turn on zostawić do validacji na koniec
-# 60 własnych nagrań switch off zostawić do validacji na koniec   
+# 60 własnych nagrań swich off zostawić do validacji na koniec
 # 630 nagrań z Google Speech Commands
 # 50 nagrań z urban sounds
 # 50 nagrań z ESC50
 # 100 nagrań ciszy
 # 150 nagrań pokoju jak się coś dzieje
 # 100 nagrań czytania
+# 350 nagrań z rozmów w salonie
 
-# suma do validacji = 60 + 60 + 90 + 630 + 50 + 50 + 100 + 160 = 1200
+# suma do validacji = 60 + 60 + 90 + 630 + 50 + 50 + 100 + 160 + 350 = 1550

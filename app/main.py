@@ -30,7 +30,7 @@ while True:     # główna pętla programu, która będzie czekać na nowe dane 
     print(f"Prediction: {prediction:.3f}")  # wypisujemy predykcję modelu (0 lub 1)
 
     line.set_ydata(raw_data)   # podmieniamy stare dane na nowe    
-    if prediction < 0.001: 
+    if prediction < 0.05: 
         line.set_color('b')
     else:
         line.set_color('r')

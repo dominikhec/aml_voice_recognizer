@@ -109,62 +109,79 @@ def twosec_data_import():
 # Poniżej znajduje się fragment kodu odpowiedzialny za augmentację nagrań JARVIS_dataset_training 
 
     def augment_plus_audio(audio):
-        return np.clip(audio * 1.1, -1.0, 1.0)
+        return np.clip(audio * random.uniform(1.03, 1.1), -1.0, 1.0)
 
 
     def augment_minus_audio(audio):
-        return np.clip(audio * 0.9, -1.0, 1.0)
+        return np.clip(audio * random.uniform(0.9, 0.97), -1.0, 1.0)
     
 
-    def augment_time_stretch_audio(audio, rate = 0.95):
+    def augment_time_stretch_audio(audio, rate = None):
 
-        stretched = librosa.effects.time_stretch(
-            audio,
-            rate=rate
-        )
+        if rate == None:              
+                rate = random.uniform(0.92, 0.97)
+
+        stretched = librosa.effects.time_stretch(audio, rate=rate)
 
         if len(stretched) > 16000:
             stretched = stretched[:16000]
         else:
-            stretched = np.pad(
-                stretched,
-                (0, 16000 - len(stretched))
-            )
+            stretched = np.pad(stretched, (0, 16000 - len(stretched)))
 
         return stretched
         
     
-    def augment_time_contracted_audio(audio, rate = 1.05):
+    def augment_time_contracted_audio(audio, rate = None):
+                                       
+        if rate == None:
+            rate = random.uniform(1.02, 1.07)
 
-        stretched = librosa.effects.time_stretch(
-            audio,
-            rate=rate
-        )
+        stretched = librosa.effects.time_stretch(audio, rate=rate)
 
         if len(stretched) > 16000:
             stretched = stretched[:16000]
         else:
-            stretched = np.pad(
-                stretched,
-                (0, 16000 - len(stretched))
-            )
+            stretched = np.pad(stretched, (0, 16000 - len(stretched)))
 
         return stretched
-    
+
 
     def augment_noise_audio(audio):
 
-        noise = np.random.normal(0, 0.005, audio.shape)
+        noise = np.random.normal(0, random.uniform(0.02, 0.07), audio.shape)
 
         audio_augmented = np.clip(audio + noise, -1.0, 1.0)
 
         return audio_augmented
+    
+
+    def augment_pitch_shift_audio(audio, sr=16000, n_steps=None):
+        # Zmienia wysokość dźwięku (pitch) o losową liczbę półtonów.
+        # sr: częstotliwość próbkowania (Sample Rate) - librosa potrzebuje jej do poprawnej zmiany pitchu.
+        
+        if n_steps is None:
+            # Losujemy zmianę od -2 do +2 półtonów (wartości zmiennoprzecinkowe są ok)
+            n_steps = random.uniform(-2.0, 2.0)
+
+        # Librosa domyślnie zachowuje czas trwania dźwięku przy zmianie pitchu,
+        # ale długość tablicy może się minimalnie zmienić o kilka próbek przez zaokrąglenia.
+        shifted = librosa.effects.pitch_shift(audio, sr=sr, n_steps=n_steps)
+
+        # Standaryzacja długości do 16000 próbek (tak jak w poprzednich funkcjach)
+        if len(shifted) > 16000:
+            shifted = shifted[:16000]
+        else:
+            shifted = np.pad(shifted, (0, 16000 - len(shifted)))
+
+        return shifted
 
 
 
     turn_on_dataset_training = turn_on_dataset_training + [(augment_plus_audio(sample), label) for sample, label in turn_on_dataset_training] + [(augment_minus_audio(sample), label) for sample, label in turn_on_dataset_training] 
     turn_on_dataset_training = turn_on_dataset_training + [(augment_time_stretch_audio(sample), label) for sample, label in turn_on_dataset_training] + [(augment_time_contracted_audio(sample), label) for sample, label in turn_on_dataset_training]
     turn_on_dataset_training = turn_on_dataset_training + [(augment_noise_audio(sample), label) for sample, label in turn_on_dataset_training]
+    turn_on_dataset_training = turn_on_dataset_training + [(augment_pitch_shift_audio(sample), label) for sample, label in turn_on_dataset_training]
+    
     
     random.shuffle(turn_on_dataset_training)
 
@@ -175,6 +192,7 @@ def twosec_data_import():
     switch_off_dataset_training = turn_on_dataset_training + [(augment_plus_audio(sample), label) for sample, label in switch_off_dataset_training] + [(augment_minus_audio(sample), label) for sample, label in switch_off_dataset_training] 
     switch_off_dataset_training = turn_on_dataset_training + [(augment_time_stretch_audio(sample), label) for sample, label in switch_off_dataset_training] + [(augment_time_contracted_audio(sample), label) for sample, label in switch_off_dataset_training]
     switch_off_dataset_training = turn_on_dataset_training + [(augment_noise_audio(sample), label) for sample, label in switch_off_dataset_training]
+    switch_off_dataset_training = turn_on_dataset_training + [(augment_pitch_shift_audio(sample), label) for sample, label in switch_off_dataset_training]
     
     random.shuffle(switch_off_dataset_training)
 
@@ -242,43 +260,48 @@ def twosec_data_import():
 
 
 
+
 # Należy pobrać:
 # 360 własnych nagrań (turn on the leds)
 # 360 własnych nagrań (switch off the leds)
-# 6930 nagrań z Google Speech Commands
-# 550 nagrań z Urban Sounds
-# 550 nagrań z ESC50
+# 13230 nagrań z Google Speech Commands
+# 1050 nagrań z Urban Sounds
+# 1050 nagrań z ESC50
 # 1100 nagrań ciszy
 # 1650 nagrań pokoju jak się coś dzieje
 # 1100 nagrań czytania
+# 3850 nagrań z rozmów w salonie
 
 
 # Struktura danych:
 
 # Do trenowania modelu
 
-# 300 nagrań własnych (turn on), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 18 = 5400)
-# 300 nagrań własnych (switch off), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 18 = 5400)
-# 6300 nagrań z Google Speech Commands
-# 500 nagrań z Urban Sounds
-# 500 nagrań z ESC50 
+# 300 nagrań własnych (turn on), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
+# 300 nagrań własnych (switch off), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
+# 12600 nagrań z Google Speech Commands
+# 1000 nagrań z Urban Sounds
+# 1000 nagrań z ESC50 
 # 1000 nagrań ciszy
 # 1500 nagrań pokoju jak się coś dzieje
 # 1000 nagrań czytania
+# 3500 nagrań z rozmów w salonie
 
-# suma (turn on + switch off) = 10800
-# suma (bez JARVIS) = 900 + 6300 + 500 + 500 + 1000 + 1600 = 10800
+# suma (turn_on+ switch off) = 21600
+# suma (bez JARVIS) = 900 + 6300 + 500 + 500 + 1000 + 1600 = 21600
+# razem 43200
 
 
 # Do validacji modelu
 
 # 60 własnych nagrań turn on zostawić do validacji na koniec
-# 60 własnych nagrań switch off zostawić do validacji na koniec   
+# 60 własnych nagrań swich off zostawić do validacji na koniec
 # 630 nagrań z Google Speech Commands
 # 50 nagrań z urban sounds
 # 50 nagrań z ESC50
 # 100 nagrań ciszy
 # 150 nagrań pokoju jak się coś dzieje
 # 100 nagrań czytania
+# 350 nagrań z rozmów w salonie
 
-# suma do validacji = 60 + 60 + 90 + 630 + 50 + 50 + 100 + 160 = 1200
+# suma do validacji = 60 + 60 + 90 + 630 + 50 + 50 + 100 + 160 + 350 = 1550

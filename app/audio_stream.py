@@ -21,7 +21,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # model import:
 #model = SimpleCNN()
 model = CRNN().to(device)
-model.load_state_dict(torch.load("wake_word_model.pth", map_location=device))
+model.load_state_dict(torch.load("wake_word_model_2.pth", map_location=device))
 #model = SimpleCNN().to(device)
 model.eval()
 

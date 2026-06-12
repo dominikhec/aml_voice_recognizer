@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     #model = SimpleCNN()
     model = CRNN()
-    model.load_state_dict(torch.load("wake_word_model.pth"))
+    model.load_state_dict(torch.load("wake_word_model_2.pth"))
     model.eval()
 
     test_data = JARVIS + background

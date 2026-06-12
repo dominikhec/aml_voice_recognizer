@@ -214,9 +214,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
         print(f"LR: {current_lr:.6f}")
 
 
-
     print(f"Final loss for lr={l_r}, bs={bs}: {epoch_loss:.4f}")
     print(f"Final accuracy for lr={l_r}, bs={bs}: {accuracy:.5f}%")
 
     torch.save(model.state_dict(), f"wake_word_model_wd_{str(weight_decay).replace('.',',')}_bs_{bs}.pth")
-

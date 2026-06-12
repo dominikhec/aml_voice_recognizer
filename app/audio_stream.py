@@ -20,10 +20,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # model import:
 #model = SimpleCNN()
-model = CRNN()
+model = CRNN().to(device)
 model.load_state_dict(torch.load("wake_word_model.pth", map_location=device))
 #model = SimpleCNN().to(device)
-model = CRNN()
 model.eval()
 
 
@@ -90,7 +89,7 @@ def audio_callback(indata, frames, time, status):
                  prediction = 0
             '''
 
-    audio_queue.put((mel.cpu().numpy(), jarvis_prob))# wysyłamy ten 1 sekundowy fragment audio do main.py 
+    audio_queue.put((model_input, mel.cpu().numpy(), jarvis_prob))# wysyłamy ten 1 sekundowy fragment audio do main.py 
 
     # powinniśmy też wysłać wynik modelu do arduino_comm.py żeby włączyć lub wyłączyć led
 

@@ -4,12 +4,19 @@ import matplotlib.pyplot as plt
 import librosa 
 import os
 import numpy as np
+from pathlib import Path
 
 
 def load_onesec_esc50_for_training():
     dataset_esc50 = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/audio_ESC50"
+    # 1. Pobieramy pełną ścieżkę do katalogu, w którym znajduje się TEN skrypt (data_import)
+    current_dir = Path(__file__).resolve().parent
+    
+    # 2. Cofamy się o jeden poziom w górę (.parent) i wchodzimy do "data/..."
+    folder = current_dir.parent / "data" / "training_and_validating" / "audio_ESC50"
+
+    # Tak było wcześniej:  folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/audio_ESC50"
 
     for file in os.listdir(folder):
 
@@ -65,7 +72,9 @@ plt.show()
 def load_twosec_esc50_for_training():
     dataset_esc50 = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/audio_ESC50"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "audio_ESC50"
 
     for file in os.listdir(folder):
 

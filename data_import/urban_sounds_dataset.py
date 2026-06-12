@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 import librosa 
 import os
 import numpy as np
-
+from pathlib import Path
 
 def load_onesec_urban_sounds_for_training():
     dataset_urban_sounds = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/urban_sounds"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "urban_sounds"
 
     for label in os.listdir(folder):
 
@@ -71,7 +73,9 @@ plt.show()
 def load_twosec_urban_sounds_for_training():
     dataset_urban_sounds = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/urban_sounds"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "urban_sounds"
 
     for label in os.listdir(folder):
 

@@ -4,13 +4,15 @@ import matplotlib.pyplot as plt
 import librosa 
 import os
 import numpy as np  
-
+from pathlib import Path
 
 
 def load_JARVIS_records_for_training():
     dataset_JARVIS = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/JARVIS"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "JARVIS"
 
     for file in os.listdir(folder):
 
@@ -76,7 +78,9 @@ plt.show()
 def load_turn_on_records_for_training():
     dataset_turnon = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/turn_on_leds"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "turn_on_leds"
 
     for file in os.listdir(folder):
 
@@ -139,12 +143,12 @@ plt.show()
 
 
 
-
-
 def load_switch_off_records_for_training():
     dataset_switchoff = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/switch_off_leds"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "switch_off_leds"
 
     for file in os.listdir(folder):
 
@@ -205,12 +209,14 @@ plt.show()
 
 
 
-# import ciszy, nagrań z pokoju i czytania  [cisza, pokój, czytanie]
+# import ciszy, nagrań z pokoju i czytania  [cisza, pokój, czytanie, rozmowy w salonie]
 
 def load_background_onesec_records_for_training():
     dataset_background = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/background_noise"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "background_noise"
 
     for file in os.listdir(folder):
 
@@ -240,7 +246,7 @@ def load_background_onesec_records_for_training():
             audio_1 = audio_1 / (np.max(np.abs(audio_1)) + 1e-8)
             training_audio_slot.append(audio_1)  # jeśli tak, to bierzemy pierwsze 16000 próbek
             #print("Długość", len(background_dataset_for_training[-1])/16000, "sekund")
-            audio = audio[16000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+            audio = audio[8000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
 
         audio_padded = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
         audio_padded = audio_padded / (np.max(np.abs(audio_padded)) + 1e-8)
@@ -255,10 +261,10 @@ def load_background_onesec_records_for_training():
 '''
 data = load_background_onesec_records_for_training()
 
-print("Loaded 1:", len(data[0]))
-print("Loaded 2:", len(data[1]))
-print("Loaded 3:", len(data[2]))    #to jest cisza
-
+print("loaded 1( to powinno być najdłuższe bo to są nagrania z salonu z rozmów):", len(data[0]))
+print("Loaded 1:", len(data[1]))
+print("Loaded 2:", len(data[2]))
+print("Loaded 3:", len(data[3]))    #to jest cisza
 
 slot_1 = data[0]
 sampling_rate = 16000
@@ -283,7 +289,9 @@ plt.show()
 def load_background_twosec_records_for_training():
     dataset_background = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/background_noise"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "background_noise"
 
     for file in os.listdir(folder):
 

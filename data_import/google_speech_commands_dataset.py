@@ -9,12 +9,15 @@ import librosa
 import numpy as np
 import os
 import math 
+from pathlib import Path
 
 
 def load_onesec_google_speech_commands_for_training():
     dataset_google = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/google_speech_commands"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "google_speech_commands"
 
     for label in os.listdir(folder):
 
@@ -85,7 +88,9 @@ plt.show()
 def load_twosec_google_speech_commands_for_training():
     dataset_google = []
 
-    folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/google_speech_commands"
+    current_dir = Path(__file__).resolve().parent
+    
+    folder = current_dir.parent / "data" / "training_and_validating" / "google_speech_commands"
 
     for label in os.listdir(folder):
 

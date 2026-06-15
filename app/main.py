@@ -33,8 +33,7 @@ import pyqtgraph
 import sys
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from PySide6.QtGui import QFont, QIcon
-from PySide6.QtSvg import QSvgRenderer
+from PySide6.QtGui import QFont, QColor, QPalette, QLinearGradient, QBrush
 import numpy as np
 import threading
 import audio_stream
@@ -42,7 +41,6 @@ import serial
 import torch
 from torchaudio import transforms
 import queue
-import time
 
 prediction_queue = queue.Queue()
 
@@ -56,7 +54,7 @@ model.load_state_dict(torch.load("JARVIS_najlepszy.pth", map_location=device))
 model.eval()
 
 model_com = CRNN_commands().to(device)
-model_com.load_state_dict(torch.load("commands_najlepszy.pth", map_location=device))
+model_com.load_state_dict(torch.load("command_word_model_wd_0,0001_bs_32.pth", map_location=device))
 model_com.eval()
 
 #ser = serial.Serial('/dev/ttyACM0', 9600)  
@@ -97,7 +95,7 @@ def JARVIS_model():
             prediction_queue.put((audio, jarvis_prob))
 
 
-            if jarvis_prob > 0.005: 
+            if jarvis_prob > 0.1: 
                 commands_model()    # uruchom model komend 
             
 
@@ -105,7 +103,7 @@ def JARVIS_model():
 def commands_model():
     audio = []
     i = 0
-    while(i<40):
+    while(i<30):
         temp = audio_stream.audio_queue.get()    
         audio.append(temp)
         i+=1
@@ -147,14 +145,17 @@ def commands_model():
                 back += 1
 
     print(f"back_ground = {back},    switch_off = {switch_off},    turn_on = {turn_on}")
-'''
+
+    '''
     if  turn_on > switch_off: 
         print("Włączamy ledy")
         ser.write(b'1')  # włącz LED
     elif turn_on < switch_off:
         print("Wyłączamy ledy")
         ser.write(b'0')  # wyłącz LED
-''' 
+    '''
+
+
 
     
 JARVIS_model_thread = threading.Thread(target=JARVIS_model, daemon=True)
@@ -171,97 +172,141 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setFixedSize(1200, 800)
-        self.setWindowTitle("My App")
-        # randomowy licznik do listening
+        self.setWindowTitle("Voice Recognition App")
+        
+        # 1. Tło okna - Ciemny gradient liniowy
+        gradient = QLinearGradient(0, 0, 0, 800)
+        gradient.setColorAt(0.0, QColor(17, 3, 104))    # Ciemny granat
+        gradient.setColorAt(1.0, QColor(17, 19, 24))    # Bardzo ciemny, prawie czarny
+
+        palette = self.palette()
+        palette.setBrush(QPalette.ColorRole.Window, QBrush(gradient))
+        self.setPalette(palette)
+
+        # Globalny styl CSS dla etykiet, aby były białe i czytelne na ciemnym tle
+        self.setStyleSheet("""
+            QLabel {
+                color: #ffffff;
+            }
+        """)
 
         self.n = 0
         self.i = 0
-
         font = QFont("Segoe UI", 20)
 
+        # STYLE DLA PRZYCISKÓW (zdefiniowany raz, aby nie powtarzać kodu)
+        button_style = """
+            QPushButton {
+                background-color: #1a237e;      /* Ciemnoniebieskie tło */
+                color: white;                   /* Biały tekst */
+                border-radius: 15px;            /* Zaokrąglenie rogów */
+                border: 2px solid #3f51b5;      /* Delikatna ramka */
+            }
+            QPushButton:hover {
+                background-color: #283593;      /* Jaśniejszy po najechaniu */
+            }
+            QPushButton:pressed {
+                background-color: #0f172a;      /* Ciemny po kliknięciu */
+            }
+        """
 
+        # 2. Przycisk (Start / Stop)
         self.button = QPushButton("Start", self)
         self.button.clicked.connect(self.klikniecie_przycisku)
         self.button.setFixedSize(300, 100)
         self.button.setFont(font)
+        self.button.setStyleSheet(button_style)
 
+        # PRZYCISK EXIT (Podpięcie wbudowanej metody self.close)
+        self.exit_button = QPushButton("Exit", self)
+        self.exit_button.clicked.connect(self.close) # <--- NADANIE FUNKCJI ZAMYKANIA
+        self.exit_button.setFixedSize(300, 100)
+        self.exit_button.setFont(font)
+        self.exit_button.setStyleSheet(button_style)
 
-
+        '''
+        # 3. Status Label (Usunięto stałą szerokość, aby nie psuła symetrii layoutu)
         self.status_label = QLabel("Program status: STOPPED")
-        self.status_label.setFixedSize(500,100)
-        
-        # 3. Przypisanie czcionki do etykiety
         self.status_label.setFont(font)
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter) # Środkowanie tekstu wewnątrz labela
+        '''
 
+        # 4. Zaokrąglona ramka (Kontener) dla wykresu
+        self.plot_container = QFrame()
+        self.plot_container.setStyleSheet("""
+            QFrame {
+                background-color: #171040;      /* Kolor tła wykresu */
+                border-radius: 20px;            /* Zaokrąglenie rogów kontenera */
+                border: 1px solid #33FFFF;      /* Obwódka */
+            }
+        """)
 
+        # 5. Wykres (Przezroczyste tło, bo siedzi w zaokrąglonej ramce)
         self.plot_widget = pyqtgraph.PlotWidget()
-        self.plot_widget.setBackground("#1e1e1e")
+        self.plot_widget.setBackground('transparent') 
         self.plot_widget.showAxis('left', False)
         self.plot_widget.showAxis('bottom', False)
         self.plot_widget.showGrid(x=True, y=True, alpha=0.2)
         self.plot_widget.setYRange(-1, 1)
         self.plot_widget.setXRange(0, 16000)
         self.plot_widget.setAntialiasing(True)
-        
+
         self.curve = self.plot_widget.plot(pen=pyqtgraph.mkPen(color=(0, 200, 255), width=2))
 
+        # Wrzucamy wykres do wnętrza zaokrąglonej ramki (kontenera)
+        container_layout = QVBoxLayout(self.plot_container)
+        container_layout.setContentsMargins(10, 10, 10, 10) 
+        container_layout.addWidget(self.plot_widget)  
+
+        # 6. Licznik czasu (Timer) do odświeżania wykresu
         self.timer = QTimer()
-        #self.timer.timeout.connect(self.update_plot)
         self.timer.timeout.connect(self.update_plot)
 
-
-        
-
-
-        # centralny widget
+        # 7. Budowanie głównej struktury layoutów okna
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
-        # GŁÓWNY layout pionowy
+        
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
 
-        # === GÓRA: PLOT ===
-        main_layout.addWidget(self.plot_widget, stretch=5)
-
-        # === DÓŁ: HORIZONTAL ===
+        # === GÓRA ===
+        main_layout.addWidget(self.plot_container, stretch=5)
+        
+        # === DÓŁ: Nowy, uporządkowany układ symetryczny ===
         bottom_layout = QHBoxLayout()
+        bottom_layout.setContentsMargins(20, 10, 20, 20) # Marginesy na dole okna
 
-        # LEWA STRONA
-        left_widget = QWidget()
+        # LEWA STRONA (Blok ze statusem i przyciskiem Start)
         left_layout = QVBoxLayout()
-        left_widget.setLayout(left_layout)
-
-        left_layout.addWidget(self.status_label)
         left_layout.addWidget(self.button)
 
-        # PRAWA STRONA
-        right_widget = QWidget()
-        right_layout = QVBoxLayout()
-        right_widget.setLayout(right_layout)
-
+        # ŚRODEK (Tylko napis JARVIS wyśrodkowany idealnie)
         self.model_label = QLabel("JARVIS is NOT LISTENING")
         self.model_label.setFont(font)
-        right_layout.addWidget(self.model_label)
+        self.model_label.setAlignment(Qt.AlignmentFlag.AlignCenter) # Środkowanie tekstu w widgetu
 
-        # dodanie do dolnego layoutu
-        bottom_layout.addWidget(left_widget)
-        bottom_layout.addWidget(right_widget)
+        # PRAWA STRONA (Blok z przyciskiem Exit - pusta etykieta u góry dla idealnej symetrii do statusu z lewej)
+        right_layout = QVBoxLayout()
+        dummy_spacer_label = QLabel("") # Pusty napis, aby przycisk "Exit" był na tej samej wysokości co przycisk "Start"
+        right_layout.addWidget(dummy_spacer_label)
+        right_layout.addWidget(self.exit_button)
+
+        # Składanie wszystkiego w poziomy dolny pasek z automatycznym rozpychaniem (stretch)
+        bottom_layout.addLayout(left_layout, stretch=1)
+        bottom_layout.addWidget(self.model_label, stretch=2) # Środek dostaje więcej przestrzeni
+        bottom_layout.addLayout(right_layout, stretch=1)
 
         main_layout.addLayout(bottom_layout, stretch=1)
-
-
+        
 
     def klikniecie_przycisku(self):
         if self.timer.isActive():
             self.timer.stop()
-            self.status_label.setText("Program status: STOPPED")
             self.model_label.setText("JARVIS is NOT LISTENING")
             self.button.setText("Start")
             self.curve.setData([])
         else:
             self.timer.start(100)
-            self.status_label.setText("Program status: ACTIVE")
             self.button.setText("Stop")
 
 
@@ -279,14 +324,14 @@ class MainWindow(QMainWindow):
         audio = np.array(audio)
         self.curve.setData(audio, skipFiniteCheck=True)
 
-        if pred > 0.01:
+        if pred > 0.1:
             self.curve.setPen(pyqtgraph.mkPen(color=(255, 10, 10), width=2))
         else:
             self.curve.setPen(pyqtgraph.mkPen(color=(0, 200, 255), width=2))
 
         
         # animacja "LISTENING ..."
-        if self.i % 3 == 0:
+        if self.i % 4 == 0:
             self.n += 1
             dots = "." * (self.n % 4)
 

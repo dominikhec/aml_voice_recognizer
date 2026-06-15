@@ -69,6 +69,7 @@ mel_transform = transforms.MelSpectrogram(
         n_mels=64
     )
 
+
 db_transform = transforms.AmplitudeToDB()
 
 
@@ -104,17 +105,19 @@ def JARVIS_model():
 def commands_model():
     audio = []
     i = 0
-    while(i<30):
+    while(i<40):
         temp = audio_stream.audio_queue.get()    
         audio.append(temp)
         i+=1
     
     model_input = [i / (np.max(np.abs(i)) + 1e-8) for i in audio]   # nromalizacja do zakresu [-1, 1]
-        
-    # teraz ten model_input powinniśmy wrzucić do modelu żeby sprawdzić co mówimy
-    # pred = model(torch.tensor(model_input))
 
-    model_input_torch = [torch.tensor(i, dtype=torch.float32) for i in model_input]
+    model_input_temp = []
+
+    for i in range(0, len(model_input) - 10, 2):
+        model_input_temp.append(np.concatenate((model_input[i], model_input[i + 10])))
+        
+    model_input_torch = [torch.tensor(i, dtype=torch.float32) for i in model_input_temp]
 
     mel = [mel_transform(i) for i in model_input_torch]
 
@@ -137,9 +140,9 @@ def commands_model():
             prediction = torch.argmax(output, dim=1).item()
              
             if prediction == 2:
-                turn_on += 1
-            elif prediction == 1:
                 switch_off += 1
+            elif prediction == 1:
+                turn_on += 1
             else: 
                 back += 1
 

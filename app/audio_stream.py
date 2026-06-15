@@ -39,8 +39,6 @@ def audio_callback(indata, frames, time, status):
 
     audio_queue.put((buffer.copy()))# wysyłamy ten 1 sekundowy fragment audio do main.py 
 
-    # powinniśmy też wysłać wynik modelu do arduino_comm.py żeby włączyć lub wyłączyć led
-
 
 
 def start_stream():     # funkcja odczytu (podsłuchu) mikrofonu (uruchamiana w main)
@@ -53,7 +51,6 @@ def start_stream():     # funkcja odczytu (podsłuchu) mikrofonu (uruchamiana w 
     )
     
     with stream:        # tutaj zaczynamy podsłuch naszego mikrofonu
-        print("Listening...")
         while True:
             sd.sleep(1000)
 

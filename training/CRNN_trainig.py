@@ -10,8 +10,8 @@ project_root = os.path.dirname(
 
 sys.path.append(project_root)
 
-from data_import.onesec_data_import import onesec_data_import
-from models.wake_word_model import *
+from data_import.twosec_data_import import twosec_data_import
+from models.command_recognition_model import *
 
 import torch
 from torch.utils.data import DataLoader
@@ -19,8 +19,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-bs = [16, 32, 64]
-weight_decay = [1e-4, 5e-3, 1e-3]
+bs = [32]
+weight_decay = [1e-4]
 
 import itertools
 
@@ -30,7 +30,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
     if __name__ == "__main__":
     # Poniżej znajduje się kawałek kodu w którym importujemy gotowe do treningu dane:
 
-        data = onesec_data_import()
+        data = twosec_data_import()
 
         training_set = data[0]
         validation_set = data[1]
@@ -40,7 +40,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
 
         #model = SimpleCNN().to(device)  
-        model = CRNN_wake_word().to(device)
+        model = CRNN_commands().to(device)
 
         l_r = 0.001
         bs = bs
@@ -67,9 +67,9 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
         print(f"Now testing for weight_decay: {weight_decay} and batch size: {bs}")
 
-        epochs = 5
+        epochs = 10
 
-        for epoch in range(5):
+        for epoch in range(epochs):
             model.train()   #ustawiamy nasz model na tryb treningowy (jest to istotne dla warstw takich jak Dropout czy BatchNorm)
             running_loss = 0.0  #zmienna pomocnicza służąca do sumowania strat w każdej epoce
 
@@ -111,7 +111,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
                     correct += (predicted == target).sum().item()
 
             accuracy = 100 * correct / total
-            print(f"Test Accuracy for learning rate: {l_r} and batch size: {bs}: {accuracy:.5f}%")
+            print(f"Test Accuracy: {accuracy:.5f}%")
 
             scheduler.step(epoch_loss)
 
@@ -122,4 +122,4 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
         print(f"Final loss for lr={l_r}, bs={bs}: {epoch_loss:.4f}")
         print(f"Final accuracy for lr={l_r}, bs={bs}: {accuracy:.5f}%")
 
-        torch.save(model.state_dict(), f"wake_word_model_wd_{str(weight_decay).replace('.',',')}_bs_{bs}.pth")
+        torch.save(model.state_dict(), f"command_word_model_wd_{str(weight_decay).replace('.',',')}_bs_{bs}.pth")

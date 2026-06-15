@@ -33,7 +33,7 @@ class SimpleCNN(nn.Module):
     
 
 class CRNN(nn.Module):
-    def __init__(self, out_channels=2):
+    def __init__(self):
         super().__init__()
         
         # Dodanie BatchNorm dla stabilności
@@ -61,7 +61,7 @@ class CRNN(nn.Module):
 
         self.gru1 = nn.GRU(256 * 8, 256, batch_first=True)
         self.gru2 = nn.GRU(256, 512, batch_first=True)
-        self.fc = nn.Linear(512, out_channels)
+        self.fc = nn.Linear(512, 2)
 
         self.attention = nn.Sequential(
             nn.Linear(512, 128),

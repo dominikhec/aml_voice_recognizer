@@ -1,42 +1,9 @@
 # this file will be collecting the audio from microphone and sending it to main.py file
 
-import sys
-import os
 
-project_root = os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))
-)
-
-sys.path.append(project_root)
-
-from models.wake_word_model import *
-from models.command_recognition_model import *
 import sounddevice as sd
 import numpy as np
 import queue
-import torch
-from torchaudio import transforms
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# model import:
-model = CRNN_wake_word().to(device)
-model.load_state_dict(torch.load("wake_word_model_2.pth", map_location=device))
-model.eval()
-
-#model = CRNN_commands().to(device)
-#model.load_state_dict(torch.load("commands_model_wd_0,0001_bs_32.pth", map_location=device))
-#model.eval()
-
-
-mel_transform = transforms.MelSpectrogram(
-        sample_rate=16000,
-        n_fft=1024,
-        hop_length=512,
-        n_mels=64
-    )
-
-db_transform = transforms.AmplitudeToDB()
 
 
 audio_queue = queue.Queue()
@@ -67,58 +34,10 @@ def audio_callback(indata, frames, time, status):
     buffer[-len(chunk):] = chunk   # opisujemy nowy chunk na koniec
     #buffer_2[-len(chunk):] = chunk
 
-    model_input = buffer.copy()     # teraz buffer ma zawsze 1 sekundę audio
+    #model_input = buffer.copy()     # teraz buffer ma zawsze 1 sekundę audio
 
-    model_input = model_input / (np.max(np.abs(model_input)) + 1e-8)  # nromalizacja do zakresu [-1, 1]
-    
-    # teraz ten model_input powinniśmy wrzucić do modelu żeby sprawdzić co mówimy
-    # pred = model(torch.tensor(model_input))
 
-    model_input = torch.tensor(model_input, dtype=torch.float32)
-
-    mel = mel_transform(model_input)
-
-    mel = db_transform(mel)
-
-    mel = mel.unsqueeze(0).unsqueeze(0)  # [1,1,64,T]
-
-        
-    with torch.no_grad(): # disables gradient tracking
-            model_in = mel.to(device)
-            
-            logits = model(model_in)
-            pred_class = torch.argmax(logits, dim=1).item()    # zgadnięta klasa
-            #print(pred_class)
-            jarvis_prob = torch.softmax(logits, dim=1)[0, 1].item()   # procent szans na 1 chyba xd
-
-            #print(f"Jarvis probability: {jarvis_prob:.3f}")
-
-            '''
-            if jarvis_prob > 0.05:
-                 model_input = buffer_2.copy()
-
-                 model_input = model_input / (np.max(np.abs(model_input)) + 1e-8)
-
-                 model_input = torch.tensor(model_input, dtype=torch.float32)
-
-                 mel = mel_transform(model_input)
-
-                 mel = db_transform(mel)
-
-                 mel = mel.unsqueeze(0).unsqueeze(0) 
-
-                 with torch.no_grad():
-                    model_in = mel.to(device)
-
-                    output = model_commands(model_in)
-                    prediction = torch.softmax(output, dim=1)[0, 1, 2].item()
-
-            else:
-                 prediction = 0
-            '''
-            
-
-    audio_queue.put((model_input, mel.cpu().numpy(), jarvis_prob))# wysyłamy ten 1 sekundowy fragment audio do main.py 
+    audio_queue.put((buffer.copy()))# wysyłamy ten 1 sekundowy fragment audio do main.py 
 
     # powinniśmy też wysłać wynik modelu do arduino_comm.py żeby włączyć lub wyłączyć led
 

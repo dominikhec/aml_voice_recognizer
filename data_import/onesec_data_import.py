@@ -36,8 +36,8 @@ def onesec_data_import():
 
     cisza = np.asarray(back_ground_noises_dataset[0], dtype=np.float32)
     salon = np.asarray(back_ground_noises_dataset[1], dtype= np.float32)
-    pokoj = np.asarray(back_ground_noises_dataset[2], dtype=np.float32)
-    czytanie = np.asarray(back_ground_noises_dataset[3], dtype=np.float32)
+    pokoj = np.asarray(back_ground_noises_dataset[4], dtype=np.float32)
+    czytanie = np.asarray(back_ground_noises_dataset[5], dtype=np.float32)
 
 
     google_dataset = [(sample, 0) for sample in google_dataset]  # etykieta 0 bo będą to background noice
@@ -94,7 +94,7 @@ def onesec_data_import():
     czytanie_validation = czytanie[1000:1100]
 
     random.shuffle(czytanie)
-    #print(f"Czytanie dataset before shuffling: {len(czytanie)}")
+    #print(f"Salon dataset before shuffling: {len(salon)}")
     salon = salon[:3850]
     salon_training = salon[:3500]
     salon_validation = salon[3500:3850]
@@ -244,7 +244,7 @@ def onesec_data_import():
 
     return training_dataset, validation_dataset
 
-onesec_data_import()
+
 
 
 # Należy pobrać:

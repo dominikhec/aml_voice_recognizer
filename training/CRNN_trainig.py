@@ -40,7 +40,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
 
         #model = SimpleCNN().to(device)  
-        model = CRNN().to(device)
+        model = CRNN_wake_word().to(device)
 
         l_r = 0.001
         bs = 32
@@ -134,7 +134,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
 
     #model = SimpleCNN().to(device)  
-    model = CRNN().to(device)
+    model = CRNN_wake_word().to(device)
 
     l_r = 1e-3
     bs = bs

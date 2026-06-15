@@ -32,8 +32,11 @@ class SimpleCNN(nn.Module):
         return x
     
 
-class CRNN(nn.Module):
-    def __init__(self):
+
+
+class CRNN_wake_word(nn.Module):
+    def __init__(self, out_channels=2):
+
         super().__init__()
         
         # Dodanie BatchNorm dla stabilności

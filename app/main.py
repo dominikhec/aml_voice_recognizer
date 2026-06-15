@@ -52,11 +52,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # model import:
 model = CRNN_wake_word().to(device)
-model.load_state_dict(torch.load("wake_word_model_2.pth", map_location=device))
+model.load_state_dict(torch.load("JARVIS_najlepszy.pth", map_location=device))
 model.eval()
 
 model_com = CRNN_commands().to(device)
-model_com.load_state_dict(torch.load("commands_model_wd_0,0001_bs_32.pth", map_location=device))
+model_com.load_state_dict(torch.load("commands_najlepszy.pth", map_location=device))
 model_com.eval()
 
 #ser = serial.Serial('/dev/ttyACM0', 9600)  

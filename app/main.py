@@ -44,7 +44,7 @@ import queue
 
 prediction_queue = queue.Queue()
 
-commands_queue = queue.Queue()
+commands_prediction_queue = queue.Queue()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -57,7 +57,7 @@ model_com = CRNN_commands().to(device)
 model_com.load_state_dict(torch.load("command_word_model_wd_0,0001_bs_32.pth", map_location=device))
 model_com.eval()
 
-#ser = serial.Serial('/dev/ttyACM0', 9600)  
+ser = serial.Serial('/dev/ttyACM0', 9600)  
 
 
 mel_transform = transforms.MelSpectrogram(
@@ -123,8 +123,6 @@ def commands_model():
 
     mel = [i.unsqueeze(0).unsqueeze(0) for i in mel]  # [1,1,64,T]
 
-    predictions = []
-
     turn_on = 0
     switch_off = 0
     back = 0
@@ -146,14 +144,15 @@ def commands_model():
 
     print(f"back_ground = {back},    switch_off = {switch_off},    turn_on = {turn_on}")
 
-    '''
+    commands_prediction_queue.put((switch_off, turn_on))
+
     if  turn_on > switch_off: 
         print("Włączamy ledy")
         ser.write(b'1')  # włącz LED
     elif turn_on < switch_off:
         print("Wyłączamy ledy")
         ser.write(b'0')  # wyłącz LED
-    '''
+    
 
 
 
@@ -311,32 +310,94 @@ class MainWindow(QMainWindow):
 
 
     def update_plot(self):
+        # 1. Pobranie danych o wykresie i wybudzaniu (Wake Word)
         temp = None
-
         while not prediction_queue.empty():
             temp = prediction_queue.get_nowait()
 
-        if temp is None:
-            return
-
-        audio, pred = temp
-
-        audio = np.array(audio)
-        self.curve.setData(audio, skipFiniteCheck=True)
-
-        if pred > 0.1:
-            self.curve.setPen(pyqtgraph.mkPen(color=(255, 10, 10), width=2))
+        # Jeśli nie ma nowego audio, nie robimy nic z wykresem
+        if temp is not None:
+            audio, pred = temp
+            audio = np.array(audio)
+            self.curve.setData(audio, skipFiniteCheck=True)
+            
+            # Zapisujemy predykcję w pamięci obiektu, aby pamiętać stan między klatkami
+            self.last_pred = pred 
         else:
+            # Jeśli brak nowej paczki, przyjmij poprzedni stan lub 0
+            if not hasattr(self, 'last_pred'):
+                self.last_pred = 0
+
+        # 2. Pobranie danych o komendach (Command Word) - NIE PRZERYWAMY SEKCJI WYŻEJ!
+        temp_1 = None
+        while not commands_prediction_queue.empty():
+            temp_1 = commands_prediction_queue.get_nowait()
+
+        # 3. Logika wyświetlania tekstów na podstawie stanu maszynowego
+        if temp_1 is not None:
             self.curve.setPen(pyqtgraph.mkPen(color=(0, 200, 255), width=2))
+            self.plot_container.setStyleSheet("""
+            QFrame {
+                background-color: #171040;      /* Kolor tła wykresu */
+                border-radius: 20px;            /* Zaokrąglenie rogów kontenera */
+                border: 1px solid #33FFFF;      /* Obwódka */
+            }
+        """)
 
-        
-        # animacja "LISTENING ..."
-        if self.i % 4 == 0:
-            self.n += 1
-            dots = "." * (self.n % 4)
+            # JEŚLI PRZYSZŁA NOWA KOMENDA (Wyświetlamy ją na stałe i zatrzymujemy na chwilę animację listening)
+            switch_off, turn_on = temp_1
+            if switch_off > turn_on:
+                self.model_label.setStyleSheet("color: #ff3333;") # Opcjonalnie: czerwony tekst dla off
+                self.model_label.setText("Leds have been switched off")
+            elif switch_off < turn_on:
+                self.model_label.setStyleSheet("color: #33ff33;") # Opcjonalnie: zielony tekst dla on
+                self.model_label.setText("Leds have been turned on")
+            else:
+                self.model_label.setStyleSheet("color: #FF8000;")
+                self.model_label.setText("JARVIS didn't understand your command")
+            
+            # Tworzymy licznik zamrożenia ekranu komendy (np. na 25 klatek = 2.5 sekundy)
+            self.display_freeze_counter = 10 
 
-            self.model_label.setText(f"JARVIS is LISTENING {dots}")
 
+        else:
+            # Sprawdzamy czy okno komunikatu o komendzie powinno jeszcze wisieć
+            if hasattr(self, 'display_freeze_counter') and self.display_freeze_counter > 0:
+                self.display_freeze_counter -= 1
+                return # Zostawiamy aktualny tekst komendy na ekranie, ignorujemy dalszą animację
+            
+            # Standardowe zachowanie w zależności od detekcji Jarvis
+            if self.last_pred > 0.1:
+                # Przywracamy domyślny biały kolor tekstu po zniknięciu komunikatu komendy
+                self.model_label.setStyleSheet("color: #ffffff;")
+                self.curve.setPen(pyqtgraph.mkPen(color=(255, 10, 10), width=2))
+                self.plot_container.setStyleSheet("""
+            QFrame {
+                background-color: #171040;      /* Kolor tła wykresu */
+                border-radius: 20px;            /* Zaokrąglenie rogów kontenera */
+                border: 1px solid #FF0000;      /* Obwódka */
+            }
+        """)
+                
+                self.model_label.setText("Issue your COMMAND ...")
+            else:
+                # Przywracamy domyślny biały kolor tekstu po zniknięciu komunikatu komendy
+                self.model_label.setStyleSheet("color: #ffffff;")
+                self.curve.setPen(pyqtgraph.mkPen(color=(0, 200, 255), width=2))
+                self.plot_container.setStyleSheet("""
+            QFrame {
+                background-color: #171040;      /* Kolor tła wykresu */
+                border-radius: 20px;            /* Zaokrąglenie rogów kontenera */
+                border: 1px solid #33FFFF;      /* Obwódka */
+            }
+        """)
+                
+                # Animacja "LISTENING ...", wykonuje się TYLKO gdy nie ma wykrytej komendy
+                if self.i % 4 == 0:
+                    self.n += 1
+                    dots = "." * (self.n % 4)
+                    self.model_label.setText(f"JARVIS is LISTENING {dots}")
+            
         self.i += 1
 
 

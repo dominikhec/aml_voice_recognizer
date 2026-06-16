@@ -78,8 +78,9 @@ def JARVIS_model():
 
             prediction_queue.put((audio, jarvis_prob))
 
-
-            if jarvis_prob > 0.1: 
+            if jarvis_prob > 0.005:
+                print(f"prediction: {jarvis_prob}")
+            if jarvis_prob > 0.8: 
                 commands_model()    # uruchom model komend 
             
 
@@ -330,7 +331,7 @@ class MainWindow(QMainWindow):
                 self.model_label.setText("Leds have been turned on")
             else:
                 self.model_label.setStyleSheet("color: #FF8000;")
-                self.model_label.setText("JARVIS didn't understand your command")
+                self.model_label.setText("JARVIS didn't understand\nyour command")
             
             # Tworzymy licznik zamrożenia ekranu komendy (np. na 25 klatek = 2.5 sekundy)
             self.display_freeze_counter = 10 
@@ -343,7 +344,7 @@ class MainWindow(QMainWindow):
                 return # Zostawiamy aktualny tekst komendy na ekranie, ignorujemy dalszą animację
             
             # Standardowe zachowanie w zależności od detekcji Jarvis
-            if self.last_pred > 0.1:
+            if self.last_pred > 0.8:
                 # Przywracamy domyślny biały kolor tekstu po zniknięciu komunikatu komendy
                 self.model_label.setStyleSheet("color: #ffffff;")
                 self.curve.setPen(pyqtgraph.mkPen(color=(255, 10, 10), width=2))

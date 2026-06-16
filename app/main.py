@@ -1,23 +1,7 @@
 # this is the most important file. Here we have a loop which recognize commends
 
-
-# below we will import tensors of voice and then run them through the model and then we will send the output to arduino_comm.py file which will communicate with arduino and turn on or off the leds
-'''
-
-    if prediction < 0.05: 
-        line.set_color('b')
-        ser.write(b'0')  # włącz LED
-    else:
-        line.set_color('r')
-        ser.write(b'1')  # wyłącz LED
-
-'''
-
-
 # W tym pliku będę się uczuć tworzyć okno aplikacji w PySide oraz wyświetlać wykres w PySide za pomocą pyqtgraph
-
-# https://www.pythonguis.com/tutorials/pyside6-creating-your-first-window/
-
+    
 import sys
 import os
 
@@ -54,10 +38,10 @@ model.load_state_dict(torch.load("JARVIS_najlepszy.pth", map_location=device))
 model.eval()
 
 model_com = CRNN_commands().to(device)
-model_com.load_state_dict(torch.load("command_word_model_wd_0,0001_bs_32.pth", map_location=device))
+model_com.load_state_dict(torch.load("commands_test.pth", map_location=device))
 model_com.eval()
 
-ser = serial.Serial('/dev/ttyACM0', 9600)  
+#ser = serial.Serial('/dev/ttyACM0', 9600)  
 
 
 mel_transform = transforms.MelSpectrogram(
@@ -134,7 +118,7 @@ def commands_model():
             
             output = model_com(model_in)
             prediction = torch.argmax(output, dim=1).item()
-             
+            
             if prediction == 2:
                 switch_off += 1
             elif prediction == 1:
@@ -145,15 +129,14 @@ def commands_model():
     print(f"back_ground = {back},    switch_off = {switch_off},    turn_on = {turn_on}")
 
     commands_prediction_queue.put((switch_off, turn_on))
-
+    '''
     if  turn_on > switch_off: 
         print("Włączamy ledy")
         ser.write(b'1')  # włącz LED
     elif turn_on < switch_off:
         print("Wyłączamy ledy")
         ser.write(b'0')  # wyłącz LED
-    
-
+    '''
 
 
     
@@ -191,7 +174,8 @@ class MainWindow(QMainWindow):
 
         self.n = 0
         self.i = 0
-        font = QFont("Segoe UI", 20)
+        font = QFont("Segoe UI", 24)
+        font.setBold(True)
 
         # STYLE DLA PRZYCISKÓW (zdefiniowany raz, aby nie powtarzać kodu)
         button_style = """
@@ -223,12 +207,6 @@ class MainWindow(QMainWindow):
         self.exit_button.setFont(font)
         self.exit_button.setStyleSheet(button_style)
 
-        '''
-        # 3. Status Label (Usunięto stałą szerokość, aby nie psuła symetrii layoutu)
-        self.status_label = QLabel("Program status: STOPPED")
-        self.status_label.setFont(font)
-        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter) # Środkowanie tekstu wewnątrz labela
-        '''
 
         # 4. Zaokrąglona ramka (Kontener) dla wykresu
         self.plot_container = QFrame()
@@ -286,8 +264,6 @@ class MainWindow(QMainWindow):
 
         # PRAWA STRONA (Blok z przyciskiem Exit - pusta etykieta u góry dla idealnej symetrii do statusu z lewej)
         right_layout = QVBoxLayout()
-        dummy_spacer_label = QLabel("") # Pusty napis, aby przycisk "Exit" był na tej samej wysokości co przycisk "Start"
-        right_layout.addWidget(dummy_spacer_label)
         right_layout.addWidget(self.exit_button)
 
         # Składanie wszystkiego w poziomy dolny pasek z automatycznym rozpychaniem (stretch)

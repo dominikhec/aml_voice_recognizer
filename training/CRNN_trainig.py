@@ -3,6 +3,9 @@
 import sys
 import os
 from pathlib import Path
+import time
+
+
 
 project_root = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
@@ -18,6 +21,8 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+
+torch.backends.cudnn.benchmark = True
 
 bs = [32]
 weight_decay = [1e-4]
@@ -67,7 +72,9 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
         print(f"Now testing for weight_decay: {weight_decay} and batch size: {bs}")
 
-        epochs = 10
+        start = time.time()
+
+        epochs = 5
 
         for epoch in range(epochs):
             model.train()   #ustawiamy nasz model na tryb treningowy (jest to istotne dla warstw takich jak Dropout czy BatchNorm)
@@ -95,6 +102,8 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
             
             epoch_loss = running_loss / len(train_loader)   # oblcizamy średni loss na epokę
 
+            end = time.time()
+
             # poniżej wypisujemy dla odpowiednich epok, jaki otrzymaliśmy średni loss
             print(f"Epoch {epoch+1}, Loss: {running_loss / len(train_loader):.4f}")     # można powiedzieć, że ta linijka wypisuje postęp treningu w konsoli
 
@@ -118,8 +127,10 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
             current_lr = optimizer.param_groups[0]["lr"]
 
             print(f"LR: {current_lr:.6f}")
+            print(f"Trainig time: {(end - start)/60} min")
 
         print(f"Final loss for lr={l_r}, bs={bs}: {epoch_loss:.4f}")
         print(f"Final accuracy for lr={l_r}, bs={bs}: {accuracy:.5f}%")
+        
 
         torch.save(model.state_dict(), f"command_word_model_wd_{str(weight_decay).replace('.',',')}_bs_{bs}.pth")

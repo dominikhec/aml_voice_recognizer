@@ -56,7 +56,7 @@ model.load_state_dict(torch.load("JARVIS_najlepszy.pth", map_location=device))
 model.eval()
 
 model_com = CRNN_commands().to(device)
-model_com.load_state_dict(torch.load("commands_najlepszy.pth", map_location=device))
+model_com.load_state_dict(torch.load("command_new.pth", map_location=device))
 model_com.eval()
 
 #ser = serial.Serial('/dev/ttyACM0', 9600)  

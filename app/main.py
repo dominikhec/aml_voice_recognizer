@@ -324,10 +324,10 @@ class MainWindow(QMainWindow):
             switch_off, turn_on = temp_1
             if switch_off > turn_on and switch_off > 1:
                 self.model_label.setStyleSheet("color: #ff3333;") # Opcjonalnie: czerwony tekst dla off
-                self.model_label.setText("Leds have been switched off")
+                self.model_label.setText("LEDs have been switched off")
             elif switch_off < turn_on and turn_on > 1:
                 self.model_label.setStyleSheet("color: #33ff33;") # Opcjonalnie: zielony tekst dla on
-                self.model_label.setText("Leds have been turned on")
+                self.model_label.setText("LEDs have been turned on")
             else:
                 self.model_label.setStyleSheet("color: #FF8000;")
                 self.model_label.setText("JARVIS didn't understand\nyour command")

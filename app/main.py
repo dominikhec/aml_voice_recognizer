@@ -41,7 +41,7 @@ model_com = CRNN_commands().to(device)
 model_com.load_state_dict(torch.load("commands_test.pth", map_location=device))
 model_com.eval()
 
-#ser = serial.Serial('/dev/ttyACM0', 9600)  
+ser = serial.Serial('/dev/ttyACM0', 9600)  
 
 
 mel_transform = transforms.MelSpectrogram(
@@ -80,7 +80,7 @@ def JARVIS_model():
 
             if jarvis_prob > 0.005:
                 print(f"prediction: {jarvis_prob}")
-            if jarvis_prob > 0.8: 
+            if jarvis_prob > 0.7: 
                 commands_model()    # uruchom model komend 
             
 
@@ -130,15 +130,14 @@ def commands_model():
     print(f"back_ground = {back},    switch_off = {switch_off},    turn_on = {turn_on}")
 
     commands_prediction_queue.put((switch_off, turn_on))
-    '''
-    if  turn_on > switch_off: 
+    
+    if  turn_on > switch_off and turn_on > 1: 
         print("Włączamy ledy")
         ser.write(b'1')  # włącz LED
-    elif turn_on < switch_off:
+    elif turn_on < switch_off and switch_off > 1:
         print("Wyłączamy ledy")
         ser.write(b'0')  # wyłącz LED
-    '''
-
+    
 
     
 JARVIS_model_thread = threading.Thread(target=JARVIS_model, daemon=True)
@@ -323,10 +322,10 @@ class MainWindow(QMainWindow):
 
             # JEŚLI PRZYSZŁA NOWA KOMENDA (Wyświetlamy ją na stałe i zatrzymujemy na chwilę animację listening)
             switch_off, turn_on = temp_1
-            if switch_off > turn_on:
+            if switch_off > turn_on and switch_off > 1:
                 self.model_label.setStyleSheet("color: #ff3333;") # Opcjonalnie: czerwony tekst dla off
                 self.model_label.setText("Leds have been switched off")
-            elif switch_off < turn_on:
+            elif switch_off < turn_on and turn_on > 1:
                 self.model_label.setStyleSheet("color: #33ff33;") # Opcjonalnie: zielony tekst dla on
                 self.model_label.setText("Leds have been turned on")
             else:
@@ -344,7 +343,7 @@ class MainWindow(QMainWindow):
                 return # Zostawiamy aktualny tekst komendy na ekranie, ignorujemy dalszą animację
             
             # Standardowe zachowanie w zależności od detekcji Jarvis
-            if self.last_pred > 0.8:
+            if self.last_pred > 0.7:
                 # Przywracamy domyślny biały kolor tekstu po zniknięciu komunikatu komendy
                 self.model_label.setStyleSheet("color: #ffffff;")
                 self.curve.setPen(pyqtgraph.mkPen(color=(255, 10, 10), width=2))

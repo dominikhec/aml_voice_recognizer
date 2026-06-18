@@ -176,18 +176,14 @@ def twosec_data_import():
     
 
     def augment_pitch_shift_audio(audio, sr=16000, n_steps=None):
-        # Zmienia wysokość dźwięku (pitch) o losową liczbę półtonów.
-        # sr: częstotliwość próbkowania (Sample Rate) - librosa potrzebuje jej do poprawnej zmiany pitchu.
+        # Zmienia wysokość dźwięku o losową liczbę półtonów.
         
         if n_steps is None:
-            # Losujemy zmianę od -2 do +2 półtonów (wartości zmiennoprzecinkowe są ok)
+            
             n_steps = random.uniform(-2.0, 2.0)
 
-        # Librosa domyślnie zachowuje czas trwania dźwięku przy zmianie pitchu,
-        # ale długość tablicy może się minimalnie zmienić o kilka próbek przez zaokrąglenia.
         shifted = librosa.effects.pitch_shift(audio, sr=sr, n_steps=n_steps)
 
-        # Standaryzacja długości do 16000 próbek (tak jak w poprzednich funkcjach)
         if len(shifted) > 32000:
             shifted = shifted[:32000]
         else:
@@ -231,7 +227,6 @@ def twosec_data_import():
 
 # Poniżej będziemy zamieniać dane na melspectrogramy:
 
-    #Najpierw trzeba zrobić MelSpectrogramy z tych danych, bo model będzie trenowany na MelSpectrogramach, a nie na surowych danych audio. Poniżej definiuję transformację, która będzie zamieniać moje dane audio (numpy array) na MelSpectrogramy, które są potrzebne do trenowania modelu w PyTorch.
     mel_transform = transforms.MelSpectrogram(
         sample_rate=16000,
         n_fft=1024,
@@ -276,10 +271,6 @@ def twosec_data_import():
     random.shuffle(validation_dataset)
 
     return training_dataset, validation_dataset
-
-
-
-
 
 # Należy pobrać:
 # 360 własnych nagrań (turn on the leds)

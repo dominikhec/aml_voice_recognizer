@@ -28,8 +28,7 @@ if __name__ == "__main__":
     #print("Length of JARVI for evaluation:", len(JARVIS))
     #print("Length of background records for evaluation:", len(background))
 
-    #model = SimpleCNN()
-    model = CRNN()
+    model = CRNN_wake_word()
     model.load_state_dict(torch.load("wake_word_model_2.pth"))
     model.eval()
 

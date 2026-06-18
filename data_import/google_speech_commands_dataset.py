@@ -58,33 +58,6 @@ def load_onesec_google_speech_commands_for_training():
     return google_dataset_for_training  
 
 
-'''
-data = load_onesec_google_speech_commands_for_training()
-
-lengths = [len(sample) for sample in data]
-
-print("min:", min(lengths))
-print("max:", max(lengths))
-print("unique:", sorted(set(lengths))[:20])
-
-print("Loaded:", len(data))
-
-audio = data[0]
-
-
-print("Audio:", audio)
-print("Total Samples in Audio:", len(audio))
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
-
-
 def load_twosec_google_speech_commands_for_training():
     dataset_google = []
 
@@ -146,32 +119,3 @@ def load_twosec_google_speech_commands_for_training():
         google_dataset_for_training_1.append(merged_audio)
 
     return google_dataset_for_training_1  
-
-
-'''
-data = load_twosec_google_speech_commands_for_training()
-
-lengths = [len(sample) for sample in data]
-
-print("min:", min(lengths))
-print("max:", max(lengths))
-print("unique:", sorted(set(lengths))[:20])
-
-print("Loaded:", len(data))
-
-audio = data[0]
-
-
-print("Audio:", audio)
-print("Total Samples in Audio:", len(audio))
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-
-'''
-

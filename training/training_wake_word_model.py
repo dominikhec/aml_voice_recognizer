@@ -31,9 +31,7 @@ if __name__ == "__main__":
 
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-    #model = SimpleCNN().to(device)  
+ 
     model = CRNN_wake_word().to(device)
 
     l_r = 0.001
@@ -50,33 +48,30 @@ if __name__ == "__main__":
     print(f"Now testing for learning rate: {l_r} and batch size: {bs}")
 
     for epoch in range(5):
-        model.train()   #ustawiamy nasz model na tryb treningowy (jest to istotne dla warstw takich jak Dropout czy BatchNorm)
-        running_loss = 0.0  #zmienna pomocnicza służąca do sumowania strat w każdej epoce
+        model.train()
+        running_loss = 0.0
 
-        for data, target in train_loader:   #pętla po batchach danych treningowych
-            # data to batch obraów, a target to batch etykiet/labelów (cyfr 0-9)
-            data, target = data.to(device), target.to(device)   # przenosimy dane i labele na urządzenie obliczeniowe (CPU)
+        for data, target in train_loader:
+            data, target = data.to(device), target.to(device)
 
-            # poniżej zerujemy gradienty zawarte w opimizerze przed rozpoczęciem obliczania nowych dla następnego batcha
-            optimizer.zero_grad() # PyTorch accumulates gradients by default, so we need to clear them before computing new ones
+            optimizer.zero_grad()
             
-            output = model(data)    # model przepuszcza dane przez sieć (output to tensor z przewidywaniami dla batcha)
-            loss = criterion(output, target)    # liczymy błąd (loss) dla tego batcha
-            loss.backward()    # backpropagacja, czyli pytorch liczy gradienty wag w siecie na podstawie loss
-            optimizer.step()    # aktualizuje wagi modelu na nowe, lekko zoptymalizowane
+            output = model(data)
+            loss = criterion(output, target)
+            loss.backward()
+            optimizer.step()
             
-            running_loss += loss.item()   # loss.item() = wartość liczby zmiennoprzecinkowej z tensora, sumujemy loss dla batchy, żeby później policzyć średni loss dla epoki
+            running_loss += loss.item()
         
-        epoch_loss = running_loss / len(train_loader)   # oblcizamy średni loss na epokę
+        epoch_loss = running_loss / len(train_loader)
 
-        # poniżej wypisujemy dla odpowiednich epok, jaki otrzymaliśmy średni loss
-        print(f"Epoch {epoch+1}, Loss: {running_loss / len(train_loader):.4f}")     # można powiedzieć, że ta linijka wypisuje postęp treningu w konsoli
+        print(f"Epoch {epoch+1}, Loss: {running_loss / len(train_loader):.4f}") 
 
         model.eval()
         correct = 0
         total = 0
 
-        with torch.no_grad(): # disables gradient tracking
+        with torch.no_grad():
             for data, target in test_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)

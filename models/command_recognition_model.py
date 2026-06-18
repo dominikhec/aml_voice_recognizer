@@ -10,7 +10,6 @@ class CRNN_commands(nn.Module):
     def __init__(self):
         super().__init__()
         
-        # Dodanie BatchNorm dla stabilności
         self.features = nn.Sequential(
             nn.Conv2d(1, 64, 3, padding=1),
             nn.BatchNorm2d(64),

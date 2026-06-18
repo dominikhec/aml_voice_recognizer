@@ -9,7 +9,7 @@ from torchaudio import transforms
 import torch
 
 
-# importing JARVIS records for evaluation (one second) ===================================================================================
+# importing JARVIS records for evaluation (one second)
 
 def load_JARVIS_records_for_evaluation():
     dataset_JARVIS = []
@@ -33,11 +33,11 @@ def load_JARVIS_records_for_evaluation():
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True, 
+            sr = 16000,
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)
 
         if len(audio) >= 16000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (16000 próbek)
             JARVIS_dataset_for_evaluation.append(audio[:16000])  # jeśli tak, to bierzemy pierwsze 16000 próbek
@@ -79,30 +79,6 @@ def load_JARVIS_records_for_evaluation():
 
 
     return evaluation_dataset 
-
-'''
-
-data = load_JARVIS_records_for_evaluation()
-
-print("Loaded:", len(data))
-
-audio = data[1]
-sampling_rate = 16000
-
-print("Audio:", audio)
-print("Sampling Rate:", sampling_rate)
-print("Total Samples in Audio:", len(audio))
-print("Total Duration:", len(audio) / sampling_rate, "seconds")
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
-
 
 
 # importing turn on the leds records for evaluation (two seconds) ===================================================================================
@@ -147,30 +123,6 @@ def load_turn_on_records_for_evaluation():
 
     return turnon_dataset_for_evaluation 
 
-'''
-data = load_turn_on_records_for_evaluation()
-
-print("Loaded:", len(data))
-
-audio = data[1]
-sampling_rate = 16000
-
-print("Audio:", audio)
-print("Sampling Rate:", sampling_rate)
-print("Total Samples in Audio:", len(audio))
-print("Total Duration:", len(audio) / sampling_rate, "seconds")
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
-
-
-
 # importing switch off the leds records for evaluation (two seconds) ===================================================================================
 
 def load_switch_off_records_for_evaluation():
@@ -186,20 +138,17 @@ def load_switch_off_records_for_evaluation():
                 "path": full_path
             })
 
-    #print("Loaded:", len(dataset_switchoff))
-
-
     switchoff_dataset_for_evaluation = []
 
     for sample in dataset_switchoff:
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True,
+            sr = 16000,
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)
 
         if len(audio) >= 32000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
             switchoff_dataset_for_evaluation.append(audio[:32000])  # jeśli tak, to bierzemy pierwsze 32000 próbek
@@ -211,29 +160,6 @@ def load_switch_off_records_for_evaluation():
             #print("Długość", len(audio_padded)/32000, "sekund")
 
     return switchoff_dataset_for_evaluation 
-
-'''
-data = load_switch_off_records_for_evaluation()
-
-print("Loaded:", len(data))
-
-audio = data[1]
-sampling_rate = 16000
-
-print("Audio:", audio)
-print("Sampling Rate:", sampling_rate)
-print("Total Samples in Audio:", len(audio))
-print("Total Duration:", len(audio) / sampling_rate, "seconds")
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
-
 
 # importing background noise records for evaluation (one second) ===================================================================================
 
@@ -259,8 +185,8 @@ def load_background_onesec_records_for_evaluation():
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True, 
+            sr = 16000,
         )
 
 
@@ -308,31 +234,6 @@ def load_background_onesec_records_for_evaluation():
 
     return evaluation_dataset 
 
-
-
-'''
-data = load_background_onesec_records_for_evaluation()
-
-print("Loaded:", len(data))
-
-audio = data[1]
-sampling_rate = 16000
-
-print("Audio:", audio)
-print("Sampling Rate:", sampling_rate)
-print("Total Samples in Audio:", len(audio))
-print("Total Duration:", len(audio) / sampling_rate, "seconds")
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
-
-
 # importing background noise records for evaluation (two seconds) ===================================================================================
 
 def load_background_twosec_records_for_evaluation():
@@ -348,19 +249,15 @@ def load_background_twosec_records_for_evaluation():
                 "path": full_path
             })
 
-    #print("Loaded:", len(dataset_background))
-
-
     background_dataset_for_evaluation = []
 
     for sample in dataset_background:
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True,
+            sr = 16000,
         )
-
 
         while(len(audio) >= 32000):   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
             audio_1 = audio[:32000]
@@ -375,27 +272,3 @@ def load_background_twosec_records_for_evaluation():
         #print("Długość", len(audio_padded)/32000, "sekund")
 
     return background_dataset_for_evaluation 
-
-
-'''
-data = load_background_twosec_records_for_evaluation()
-
-print("Loaded:", len(data))
-
-audio = data[1]
-sampling_rate = 16000
-
-print("Audio:", audio)
-print("Sampling Rate:", sampling_rate)
-print("Total Samples in Audio:", len(audio))
-print("Total Duration:", len(audio) / sampling_rate, "seconds")
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
-

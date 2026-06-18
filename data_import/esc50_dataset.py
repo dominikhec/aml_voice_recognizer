@@ -10,13 +10,9 @@ from pathlib import Path
 def load_onesec_esc50_for_training():
     dataset_esc50 = []
 
-    # 1. Pobieramy pełną ścieżkę do katalogu, w którym znajduje się TEN skrypt (data_import)
     current_dir = Path(__file__).resolve().parent
     
-    # 2. Cofamy się o jeden poziom w górę (.parent) i wchodzimy do "data/..."
     folder = current_dir.parent / "data" / "training_and_validating" / "audio_ESC50"
-
-    # Tak było wcześniej:  folder = "/home/aleksander/studia/semestr4/AML/AML_Voice_recognizer/data/training_and_validating/audio_ESC50"
 
     for file in os.listdir(folder):
 
@@ -35,39 +31,17 @@ def load_onesec_esc50_for_training():
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True,
+            sr = 16000,
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
-
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)
         while len(audio) >= 16000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (16000 próbek)
             esc50_dataset_for_training.append(audio[:16000])  # jeśli tak, to bierzemy pierwsze 16000 próbek
             audio = audio[16000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
 
 
     return esc50_dataset_for_training  
-
-
-'''
-data = load_onesec_esc50_for_training()
-
-print("Loaded:", len(data))
-
-audio= data[0]
-
-
-print("Audio:", audio)
-print("Total Samples in Audio:", len(audio))
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''
 
 def load_twosec_esc50_for_training():
     dataset_esc50 = []
@@ -93,36 +67,15 @@ def load_twosec_esc50_for_training():
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True,
+            sr = 16000,
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)
 
-        while len(audio) >= 32000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
-            esc50_dataset_for_training.append(audio[:32000])  # jeśli tak, to bierzemy pierwsze 32000 próbek
-            audio = audio[32000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+        while len(audio) >= 32000:
+            esc50_dataset_for_training.append(audio[:32000])
+            audio = audio[32000:]
 
 
     return esc50_dataset_for_training  
-
-
-'''
-data = load_twosec_esc50_for_training()
-
-print("Loaded:", len(data))
-
-audio= data[0]
-
-
-print("Audio:", audio)
-print("Total Samples in Audio:", len(audio))
-
-
-plt.plot(audio)
-plt.grid(True)
-plt.xlabel("Sample Index")
-plt.ylabel("Amplitude")
-plt.title("Audio Waveform")
-plt.show()
-'''

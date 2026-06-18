@@ -28,7 +28,6 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
 
     if __name__ == "__main__":
-    # Poniżej znajduje się kawałek kodu w którym importujemy gotowe do treningu dane:
 
         data = twosec_data_import()
 
@@ -37,9 +36,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-        #model = SimpleCNN().to(device)  
+  
         model = CRNN_commands().to(device)
 
         l_r = 0.001
@@ -70,33 +67,32 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
         epochs = 5
 
         for epoch in range(5):
-            model.train()   #ustawiamy nasz model na tryb treningowy (jest to istotne dla warstw takich jak Dropout czy BatchNorm)
-            running_loss = 0.0  #zmienna pomocnicza służąca do sumowania strat w każdej epoce
+            model.train()
+            running_loss = 0.0
 
-            for data, target in train_loader:   #pętla po batchach danych treningowych
-                # data to batch obraów, a target to batch etykiet/labelów (cyfr 0-9)
-                data, target = data.to(device), target.to(device)   # przenosimy dane i labele na urządzenie obliczeniowe (CPU)
-
-                # poniżej zerujemy gradienty zawarte w opimizerze przed rozpoczęciem obliczania nowych dla następnego batcha
-                optimizer.zero_grad() # PyTorch accumulates gradients by default, so we need to clear them before computing new ones
+            for data, target in train_loader:
                 
-                output = model(data)    # model przepuszcza dane przez sieć (output to tensor z przewidywaniami dla batcha)
-                loss = criterion(output, target)    # liczymy błąd (loss) dla tego batcha
-                loss.backward()    # backpropagacja, czyli pytorch liczy gradienty wag w siecie na podstawie loss
+                data, target = data.to(device), target.to(device)
+
+                optimizer.zero_grad()
+                
+                output = model(data)
+                loss = criterion(output, target)
+                loss.backward()
 
                 torch.nn.utils.clip_grad_norm_(
                     model.parameters(),
                     max_norm=5.0
                 )
 
-                optimizer.step()    # aktualizuje wagi modelu na nowe, lekko zoptymalizowane
+                optimizer.step()
                 
-                running_loss += loss.item()   # loss.item() = wartość liczby zmiennoprzecinkowej z tensora, sumujemy loss dla batchy, żeby później policzyć średni loss dla epoki
+                running_loss += loss.item()
             
-            epoch_loss = running_loss / len(train_loader)   # oblcizamy średni loss na epokę
+            epoch_loss = running_loss / len(train_loader)
+           
 
-            # poniżej wypisujemy dla odpowiednich epok, jaki otrzymaliśmy średni loss
-            print(f"Epoch {epoch+1}, Loss: {running_loss / len(train_loader):.4f}")     # można powiedzieć, że ta linijka wypisuje postęp treningu w konsoli
+            print(f"Epoch {epoch+1}, Loss: {running_loss / len(train_loader):.4f}") 
 
             model.eval()
             correct = 0

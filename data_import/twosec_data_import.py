@@ -36,14 +36,7 @@ def twosec_data_import():
     pokoj = np.asarray(back_ground_noises_dataset[4], dtype=np.float32)
     czytanie = np.asarray(back_ground_noises_dataset[0], dtype=np.float32)
     salon = np.asarray(back_ground_noises_dataset[1] + back_ground_noises_dataset[2] + back_ground_noises_dataset[3], dtype=np.float32)
-    #salon_2 = np.asarray(back_ground_noises_dataset[2], dtype=np.float32)
-
-    #salon = salon_1 + salon_2
     
-
-# Do tego trzeba też wczytać pliki ciszy, pokoju i czytania, które trzeba jeszcze dograć
-
-# będziemy wykonywać supervised learning, więc potrzebyjemy mieć etykiety do naszych danych treningowych
 
     google_dataset = [(sample, 0) for sample in google_dataset]  # etykieta 0 bo będą to background noice
     urban_sounds_dataset = [(sample, 0) for sample in urban_sounds_dataset]  # etykieta 0 bo będą to background noice
@@ -126,7 +119,7 @@ def twosec_data_import():
     #print(f"switch off dataset: {len(switch_off_dataset)}, training (300): {len(switch_off_dataset_training)}, validation(60): {len(switch_off_dataset_validating)}")
 
     
-# Poniżej znajduje się fragment kodu odpowiedzialny za augmentację nagrań JARVIS_dataset_training 
+# Below we will augment our JARVIS recordings
 
     def augment_plus_audio(audio):
         return np.clip(audio * random.uniform(1.03, 1.1), -1.0, 1.0)
@@ -225,7 +218,7 @@ def twosec_data_import():
     #print(f"Training dataset (43200): {len(raw_training_dataset)}, Validation dataset (2280): {len(raw_validation_dataset)}")
 
 
-# Poniżej będziemy zamieniać dane na melspectrogramy:
+# Below we will convert audio to mel spectograms
 
     mel_transform = transforms.MelSpectrogram(
         sample_rate=16000,
@@ -266,53 +259,51 @@ def twosec_data_import():
         validation_dataset.append((mel, label))
 
 
-    # tasowanie danych treningowych
     random.shuffle(training_dataset)
     random.shuffle(validation_dataset)
 
     return training_dataset, validation_dataset
-
-# Należy pobrać:
-# 360 własnych nagrań (turn on the leds)
-# 360 własnych nagrań (switch off the leds)
-# 13860 nagrań z Google Speech Commands
-# 1050 nagrań z Urban Sounds
-# 1050 nagrań z ESC50
-# 550 nagrań ciszy
-# 990 nagrań pokoju jak się coś dzieje
-# 550 nagrań czytania
-# 5610 nagrań z rozmów w salonie
-
-
-# Struktura danych:
-
-# Do trenowania modelu
-
-# 300 nagrań własnych (turn on), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
-# 300 nagrań własnych (switch off), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
-# 12600 nagrań z Google Speech Commands
-# 1000 nagrań z Urban Sounds
-# 1000 nagrań z ESC50 
-# 500 nagrań ciszy
-# 900 nagrań pokoju jak się coś dzieje
-# 500 nagrań czytania
-# 5100 nagrań z rozmów w salonie
-
-# suma (turn_on+ switch off) = 21600
-# suma (bez JARVIS) = 12600 + 1000 + 1000 + 500 + 900 + 500 + 5100 = 21600
-# razem 43200
+# To be downloaded:
+# 360 own recordings (turn on the leds)
+# 360 own recordings (switch off the leds)
+# 13,860 recordings from Google Speech Commands
+# 1,050 recordings from Urban Sounds
+# 1,050 recordings from ESC50
+# 550 recordings of silence
+# 990 recordings of the room when something is happening
+# 550 recordings of reading
+# 5,610 recordings of conversations in the living room
 
 
-# Do validacji modelu
+# Data structure:
 
-# 60 własnych nagrań turn on zostawić do validacji na koniec
-# 60 własnych nagrań swich off zostawić do validacji na koniec
-# 1260 nagrań z Google Speech Commands
-# 100 nagrań z urban sounds
-# 100 nagrań z ESC50
-# 50 nagrań ciszy
-# 90 nagrań pokoju jak się coś dzieje
-# 50 nagrań czytania
-# 510 nagrań z rozmów w salonie
+# For model training
 
-# suma do validacji = 60 + 60 + 1260 + 100 + 100 + 50 + 90 + 50 + 510 = 2280
+# 300 own recordings (turn on), from which through augmentation we can make 5,400 recordings (300 * 36 = 10,800)
+# 300 own recordings (switch off), from which through augmentation we can make 5,400 recordings (300 * 36 = 10,800)
+# 12,600 recordings from Google Speech Commands
+# 1,000 recordings from Urban Sounds
+# 1,000 recordings from ESC50 
+# 500 recordings of silence
+# 900 recordings of the room when something is happening
+# 500 recordings of reading
+# 5,100 recordings of conversations in the living room
+
+# sum (turn_on + switch off) = 21,600
+# sum (without JARVIS) = 12,600 + 1,000 + 1,000 + 500 + 900 + 500 + 5,100 = 21,600
+# total 43,200
+
+
+# For model validation
+
+# 60 own recordings turn on to be left for validation at the end
+# 60 own recordings switch off to be left for validation at the end
+# 1,260 recordings from Google Speech Commands
+# 100 recordings from Urban Sounds
+# 100 recordings from ESC50
+# 50 recordings of silence
+# 90 recordings of the room when something is happening
+# 50 recordings of reading
+# 510 recordings of conversations in the living room
+
+# sum for validation = 60 + 60 + 1,260 + 100 + 100 + 50 + 90 + 50 + 510 = 2,28

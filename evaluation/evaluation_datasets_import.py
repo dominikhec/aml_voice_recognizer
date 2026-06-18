@@ -39,12 +39,12 @@ def load_JARVIS_records_for_evaluation():
 
         audio = audio / (np.max(np.abs(audio)) + 1e-8)
 
-        if len(audio) >= 16000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (16000 próbek)
-            JARVIS_dataset_for_evaluation.append(audio[:16000])  # jeśli tak, to bierzemy pierwsze 16000 próbek
+        if len(audio) >= 16000:  
+            JARVIS_dataset_for_evaluation.append(audio[:16000])  
             #print("Długość", len(turnon_dataset_for_evaluation[-1])/16000, "sekund")
-            audio = audio[16000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+            audio = audio[16000:]  
         else:
-            audio_padded = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
+            audio_padded = np.pad(audio, (0, 16000 - len(audio)), mode='constant') 
             JARVIS_dataset_for_evaluation.append(audio_padded)
             #print("Długość", len(audio_padded)/16000, "sekund")
 
@@ -105,18 +105,18 @@ def load_turn_on_records_for_evaluation():
         
         audio, sr = librosa.load(
             sample["path"],
-            mono=True,   # tutaj ustawiamy mono, czyli pojedynczy kanał
-            sr = 16000,   # tutaj ustawiamy docelową częstotliwość próbkowania na 16kHz
+            mono=True,  
+            sr = 16000,   
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio, dzielimy przez maksymalną wartość bezwzględną, aby mieć wartości w zakresie [-1, 1]
+        audio = audio / (np.max(np.abs(audio)) + 1e-8) 
 
-        if len(audio) >= 32000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
-            turnon_dataset_for_evaluation.append(audio[:32000])  # jeśli tak, to bierzemy pierwsze 32000 próbek
+        if len(audio) >= 32000:   
+            turnon_dataset_for_evaluation.append(audio[:32000]) 
             #print("Długość", len(turnon_dataset_for_evaluation[-1])/32000, "sekund")
-            audio = audio[32000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+            audio = audio[32000:]  
         else:
-            audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
+            audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')  
             turnon_dataset_for_evaluation.append(audio_padded)
             #print("Długość", len(audio_padded)/32000, "sekund")
 
@@ -150,12 +150,12 @@ def load_switch_off_records_for_evaluation():
 
         audio = audio / (np.max(np.abs(audio)) + 1e-8)
 
-        if len(audio) >= 32000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
-            switchoff_dataset_for_evaluation.append(audio[:32000])  # jeśli tak, to bierzemy pierwsze 32000 próbek
+        if len(audio) >= 32000:   
+            switchoff_dataset_for_evaluation.append(audio[:32000])  
             #print("Długość", len(switchoff_dataset_for_evaluation[-1])/32000, "sekund")
-            audio = audio[32000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+            audio = audio[32000:]  
         else:
-            audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
+            audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')  
             switchoff_dataset_for_evaluation.append(audio_padded)
             #print("Długość", len(audio_padded)/32000, "sekund")
 
@@ -190,14 +190,14 @@ def load_background_onesec_records_for_evaluation():
         )
 
 
-        while(len(audio) >= 16000):   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (16000 próbek)
+        while(len(audio) >= 16000):  
             audio_1 = audio[:16000]
             audio_1 = audio_1 / (np.max(np.abs(audio_1)) + 1e-8)
-            background_dataset_for_evaluation.append(audio_1)  # jeśli tak, to bierzemy pierwsze 16000 próbek
+            background_dataset_for_evaluation.append(audio_1)  
             #print("Długość", len(background_dataset_for_evaluation[-1])/16000, "sekund")
-            audio = audio[8000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+            audio = audio[8000:]  
 
-        audio_padded = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
+        audio_padded = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  
         audio_padded = audio_padded / (np.max(np.abs(audio_padded)) + 1e-8)
         background_dataset_for_evaluation.append(audio_padded)
         #print("Długość", len(audio_padded)/16000, "sekund")
@@ -259,14 +259,14 @@ def load_background_twosec_records_for_evaluation():
             sr = 16000,
         )
 
-        while(len(audio) >= 32000):   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (32000 próbek)
+        while(len(audio) >= 32000):   
             audio_1 = audio[:32000]
             audio_1 = audio_1 / (np.max(np.abs(audio_1)) + 1e-8)
-            background_dataset_for_evaluation.append(audio_1)  # jeśli tak, to bierzemy pierwsze 32000 próbek
+            background_dataset_for_evaluation.append(audio_1)  
             #print("Długość", len(background_dataset_for_evaluation[-1])/32000, "sekund")
-            audio = audio[16000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+            audio = audio[16000:]  
 
-        audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')  # jeśli nie, to dopełniamy audio zerami do 1 sekundy
+        audio_padded = np.pad(audio, (0, 32000 - len(audio)), mode='constant')
         audio_padded = audio_padded / (np.max(np.abs(audio_padded)) + 1e-8)
         background_dataset_for_evaluation.append(audio_padded)
         #print("Długość", len(audio_padded)/32000, "sekund")

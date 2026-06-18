@@ -45,12 +45,12 @@ def load_onesec_google_speech_commands_for_training():
             sr=16000,
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)  
 
         if len(audio) > 16000:
             audio = audio[:16000]
         else:
-            audio = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  # dopełniamy audio zerami do 1 sekundy
+            audio = np.pad(audio, (0, 16000 - len(audio)), mode='constant')  
             
         google_dataset_for_training.append(audio)
 
@@ -94,7 +94,7 @@ def load_twosec_google_speech_commands_for_training():
             sr=16000,
         )
 
-        audio = audio / (np.max(np.abs(audio)) + 1e-8)  # normalizacja audio
+        audio = audio / (np.max(np.abs(audio)) + 1e-8)  
 
     
         google_dataset_for_training.append(audio)
@@ -114,7 +114,7 @@ def load_twosec_google_speech_commands_for_training():
         if len(merged_audio) > 32000:
             merged_audio = merged_audio[:32000]
         else:
-            merged_audio = np.pad(merged_audio, (0, 32000 - len(merged_audio)), mode='constant')  # dopełniamy audio zerami do 1 sekundy
+            merged_audio = np.pad(merged_audio, (0, 32000 - len(merged_audio)), mode='constant') 
             
         google_dataset_for_training_1.append(merged_audio)
 

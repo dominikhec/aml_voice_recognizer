@@ -77,7 +77,7 @@ def load_turn_on_records_for_training():
         audio = audio / (np.max(np.abs(audio)) + 1e-8)
 
         if len(audio) >= 32000:
-            turnon_dataset_for_training.append(audio[:32000])  # jeśli tak, to bierzemy pierwsze 32000 próbek
+            turnon_dataset_for_training.append(audio[:32000])  
             #print("Długość", len(turnon_dataset_for_training[-1])/32000, "sekund")
             audio = audio[32000:]
         else:
@@ -129,7 +129,6 @@ def load_switch_off_records_for_training():
     return switchoff_dataset_for_training 
 
 
-# import ciszy, nagrań z pokoju i czytania  [cisza, pokój, czytanie, rozmowy w salonie]
 
 def load_background_onesec_records_for_training():
     dataset_background = []
@@ -177,7 +176,7 @@ def load_background_onesec_records_for_training():
 
     return background_dataset_for_training 
 
-# import ciszy, nagrań z pokoju i czytania  [cisza, pokój, czytanie]
+
 
 def load_background_twosec_records_for_training():
     dataset_background = []

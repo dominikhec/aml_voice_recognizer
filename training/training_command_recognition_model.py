@@ -41,7 +41,7 @@ for bs, weight_decay in itertools.product(bs, weight_decay):
 
         l_r = 0.001
         bs = 32
-        # Below I create two data loader respectively one for train dataset and one for test dataset
+        # Below are two data loaders respectively one for train dataset and one for test dataset
         train_loader = DataLoader(training_set, batch_size = bs, shuffle = True)
         test_loader = DataLoader(validation_set, batch_size = bs, shuffle = False)
 

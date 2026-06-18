@@ -36,9 +36,9 @@ def load_onesec_esc50_for_training():
         )
 
         audio = audio / (np.max(np.abs(audio)) + 1e-8)
-        while len(audio) >= 16000:   # tutaj sprawdzamy, czy długość audio jest większa lub równa 1 sekundzie (16000 próbek)
-            esc50_dataset_for_training.append(audio[:16000])  # jeśli tak, to bierzemy pierwsze 16000 próbek
-            audio = audio[16000:]  # i usuwamy te próbki z oryginalnego audio, żeby sprawdzić resztę
+        while len(audio) >= 16000:   
+            esc50_dataset_for_training.append(audio[:16000])  
+            audio = audio[16000:]  
 
 
     return esc50_dataset_for_training  

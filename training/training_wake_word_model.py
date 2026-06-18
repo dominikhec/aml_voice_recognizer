@@ -22,7 +22,7 @@ import torch.nn.functional as F
 
 if __name__ == "__main__":
     
-# Poniżej znajduje się kawałek kodu w którym importujemy gotowe do treningu dane:
+# Below is a piece of code in which we import data ready for training:
 
     data = onesec_data_import()
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     l_r = 0.001
     bs = 32
-    # Below I create two data loader respectively one for train dataset and one for test dataset
+    # Below are two data loaders respectively one for train dataset and one for test dataset
     train_loader = DataLoader(training_set, batch_size = bs, shuffle = True)
     test_loader = DataLoader(validation_set, batch_size = bs, shuffle = False)
 

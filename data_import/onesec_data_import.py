@@ -9,7 +9,6 @@ project_root = os.path.dirname(
 
 sys.path.append(project_root)
 
-#import torchaudio
 from data_import.google_speech_commands_dataset import load_onesec_google_speech_commands_for_training
 from data_import.urban_sounds_dataset import load_onesec_urban_sounds_for_training
 from data_import.esc50_dataset import load_onesec_esc50_for_training
@@ -24,8 +23,6 @@ import librosa
 
 
 def onesec_data_import():
-
-# Poniżej znajduje się kawałek kodu odpowiadający za pobieranie danych z plików, podpisywanie labelów, tasowanie oraz dzielenia na zbiór treningowy i walidacyjny.
 
     google_dataset = np.asarray(load_onesec_google_speech_commands_for_training(), dtype=np.float32)
     urban_sounds_dataset = np.asarray(load_onesec_urban_sounds_for_training(), dtype=np.float32)
@@ -107,8 +104,8 @@ def onesec_data_import():
 
     #print(f"JARVIS dataset: {len(JARVIS_dataset)}, training (300): {len(JARVIS_dataset_training)}, validation(60): {len(JARVIS_dataset_validation)}")
 
-    
-# Poniżej znajduje się fragment kodu odpowiedzialny za augmentację nagrań JARVIS_dataset_training 
+
+    # Augmentation part    
 
     def augment_plus_audio(audio):
         return np.clip(audio * random.uniform(1.03, 1.1), -1.0, 1.0)
@@ -158,7 +155,6 @@ def onesec_data_import():
     
 
     def augment_pitch_shift_audio(audio, sr=16000, n_steps=None):
-        # Zmienia wysokość dźwięku o losową liczbę półtonów.
         
         if n_steps is None:
             n_steps = random.uniform(-2.0, 2.0)
@@ -191,7 +187,7 @@ def onesec_data_import():
     #print(f"Training dataset (32400): {len(raw_training_dataset)}, Validation dataset (1490): {len(raw_validation_dataset)}")
 
 
-# Poniżej będziemy zamieniać dane na melspectrogramy:
+# Below we will be changing audio to mel spectograms
 
     mel_transform = transforms.MelSpectrogram(
         sample_rate=16000,
@@ -232,7 +228,6 @@ def onesec_data_import():
         validation_dataset.append((mel, label))
 
 
-    # tasowanie danych treningowych
     random.shuffle(training_dataset)
     random.shuffle(validation_dataset)
 
@@ -241,43 +236,43 @@ def onesec_data_import():
 
 
 
-# Należy pobrać:
-# 360 własnych nagrań (JARVIS)
-# 13230 nagrań z Google Speech Commands
-# 1050 nagrań z Urban Sounds
-# 1050 nagrań z ESC50
-# 1100 nagrań ciszy
-# 1650 nagrań pokoju jak się coś dzieje
-# 1100 nagrań czytania
-# 3850 nagrań z rozmów w salonie
+# To be downloaded:
+# 360 own recordings (JARVIS)
+# 13,230 recordings from Google Speech Commands
+# 1,050 recordings from Urban Sounds
+# 1,050 recordings from ESC50
+# 1,100 recordings of silence
+# 1,650 recordings of the room when something is happening
+# 1,100 recordings of reading
+# 3,850 recordings of conversations in the living room
 
 
-# Struktura danych:
+# Data structure:
 
-# Do trenowania modelu
+# For model training
 
-# 300 nagrań własnych (JARVIS), z których za pomocą augmentacji możemy zrobić 5400 nagrań (300 * 36 = 10800)
-# 12600 nagrań z Google Speech Commands
-# 1000 nagrań z Urban Sounds
-# 1000 nagrań z ESC50 
-# 1000 nagrań ciszy
-# 1500 nagrań pokoju jak się coś dzieje
-# 1000 nagrań czytania
-# 3500 nagrań z rozmów w salonie
+# 300 own recordings (JARVIS), from which through augmentation we can make 5,400 recordings (300 * 36 = 10,800)
+# 12,600 recordings from Google Speech Commands
+# 1,000 recordings from Urban Sounds
+# 1,000 recordings from ESC50 
+# 1,000 recordings of silence
+# 1,500 recordings of the room when something is happening
+# 1,000 recordings of reading
+# 3,500 recordings of conversations in the living room
 
-# suma (JARVIS) = 10800
-# suma (bez JARVIS) = 900 + 6300 + 500 + 500 + 1000 + 1600 = 21600
+# sum (JARVIS) = 10,800
+# sum (without JARVIS) = 900 + 6,300 + 500 + 500 + 1,000 + 1,600 = 21,600
 
 
-# Do validacji modelu
+# For model validation
 
-# 60 własnych nagrań zostawić do validacji na koniec   
-# 630 nagrań z Google Speech Commands
-# 50 nagrań z urban sounds
-# 50 nagrań z ESC50
-# 100 nagrań ciszy
-# 150 nagrań pokoju jak się coś dzieje
-# 100 nagrań czytania
-# 350 nagrań z rozmów w salonie
+# 60 own recordings to be left for validation at the end   
+# 630 recordings from Google Speech Commands
+# 50 recordings from Urban Sounds
+# 50 recordings from ESC50
+# 100 recordings of silence
+# 150 recordings of the room when something is happening
+# 100 recordings of reading
+# 350 recordings of conversations in the living room
 
-# suma do validacji = 60 + 90 + 630 + 50 + 50 + 100 + 160 + 350 = 1490
+# sum for validation = 60 + 90 + 630 + 50 + 50 + 100 + 160 + 350 = 1,490

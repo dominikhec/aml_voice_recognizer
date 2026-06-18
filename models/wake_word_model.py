@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-# Below I create a class with my model that I will be training and then testing
+# Below  is a lass with model for training 
 class SimpleCNN(nn.Module):
 
     def __init__(self):
@@ -16,7 +16,7 @@ class SimpleCNN(nn.Module):
 
         self.pool = nn.MaxPool2d(2)
 
-        self.fc1 = nn.Linear(2688, 64)  # Adjust the input size based on your actual input dimensions
+        self.fc1 = nn.Linear(2688, 64) 
         self.fc2 = nn.Linear(64, 2)
 
     def forward(self, x):

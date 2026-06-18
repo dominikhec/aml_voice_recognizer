@@ -1,7 +1,5 @@
-# this is the most important file. Here we have a loop which recognize commends
+# This is the most important file, where we run a GUI, analyze a sound live and act acordingly to the instructions
 
-# W tym pliku będę się uczuć tworzyć okno aplikacji w PySide oraz wyświetlać wykres w PySide za pomocą pyqtgraph
-    
 import sys
 import os
 
@@ -41,6 +39,7 @@ model_com = CRNN_commands().to(device)
 model_com.load_state_dict(torch.load("commands_test.pth", map_location=device))
 model_com.eval()
 
+# If you don't have arduino board, you should comment a line below
 ser = serial.Serial('/dev/ttyACM0', 9600)  
 
 
@@ -59,7 +58,7 @@ def JARVIS_model():
     while True:
         audio = audio_stream.audio_queue.get()
 
-        model_input = audio / (np.max(np.abs(audio)) + 1e-8)  # nromalizacja do zakresu [-1, 1]
+        model_input = audio / (np.max(np.abs(audio)) + 1e-8)  
     
         model_input_torch = torch.tensor(model_input, dtype=torch.float32)
 
@@ -74,14 +73,14 @@ def JARVIS_model():
             model_in = mel.to(device)
             
             logits = model(model_in)
-            jarvis_prob = torch.softmax(logits, dim=1)[0, 1].item()   # procent szans na 1 chyba xd
+            jarvis_prob = torch.softmax(logits, dim=1)[0, 1].item()   
 
             prediction_queue.put((audio, jarvis_prob))
 
             if jarvis_prob > 0.005:
                 print(f"prediction: {jarvis_prob}")
             if jarvis_prob > 0.7: 
-                commands_model()    # uruchom model komend 
+                commands_model()    
             
 
 
@@ -93,7 +92,7 @@ def commands_model():
         audio.append(temp)
         i+=1
     
-    model_input = [i / (np.max(np.abs(i)) + 1e-8) for i in audio]   # nromalizacja do zakresu [-1, 1]
+    model_input = [i / (np.max(np.abs(i)) + 1e-8) for i in audio]  
 
     model_input_temp = []
 
@@ -131,12 +130,14 @@ def commands_model():
 
     commands_prediction_queue.put((switch_off, turn_on))
     
+
+    # If you don't have arduino board, you should comment a line below
     if  turn_on > switch_off and turn_on > 1: 
         print("Włączamy ledy")
-        ser.write(b'1')  # włącz LED
+        ser.write(b'1')  # turn on the LEDs
     elif turn_on < switch_off and switch_off > 1:
         print("Wyłączamy ledy")
-        ser.write(b'0')  # wyłącz LED
+        ser.write(b'0')  # switch off the LEDs
     
 
     
@@ -148,7 +149,7 @@ t = threading.Thread(target=audio_stream.start_stream, daemon=True)
 t.start()
 
 
-# Subclass QMainWindow to customize your application's main window
+# Below is main window class where a GUI loop hapens 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -158,14 +159,13 @@ class MainWindow(QMainWindow):
         
         # 1. Tło okna - Ciemny gradient liniowy
         gradient = QLinearGradient(0, 0, 0, 800)
-        gradient.setColorAt(0.0, QColor(17, 3, 104))    # Ciemny granat
-        gradient.setColorAt(1.0, QColor(17, 19, 24))    # Bardzo ciemny, prawie czarny
+        gradient.setColorAt(0.0, QColor(17, 3, 104))    
+        gradient.setColorAt(1.0, QColor(17, 19, 24))    
 
         palette = self.palette()
         palette.setBrush(QPalette.ColorRole.Window, QBrush(gradient))
         self.setPalette(palette)
 
-        # Globalny styl CSS dla etykiet, aby były białe i czytelne na ciemnym tle
         self.setStyleSheet("""
             QLabel {
                 color: #ffffff;
@@ -177,7 +177,7 @@ class MainWindow(QMainWindow):
         font = QFont("Segoe UI", 24)
         font.setBold(True)
 
-        # STYLE DLA PRZYCISKÓW (zdefiniowany raz, aby nie powtarzać kodu)
+
         button_style = """
             QPushButton {
                 background-color: #1a237e;      /* Ciemnoniebieskie tło */
@@ -193,22 +193,22 @@ class MainWindow(QMainWindow):
             }
         """
 
-        # 2. Przycisk (Start / Stop)
+        # 2. Button (Start / Stop)
         self.button = QPushButton("Start", self)
         self.button.clicked.connect(self.klikniecie_przycisku)
         self.button.setFixedSize(300, 100)
         self.button.setFont(font)
         self.button.setStyleSheet(button_style)
 
-        # PRZYCISK EXIT (Podpięcie wbudowanej metody self.close)
+        # EXIT button 
         self.exit_button = QPushButton("Exit", self)
-        self.exit_button.clicked.connect(self.close) # <--- NADANIE FUNKCJI ZAMYKANIA
+        self.exit_button.clicked.connect(self.close) 
         self.exit_button.setFixedSize(300, 100)
         self.exit_button.setFont(font)
         self.exit_button.setStyleSheet(button_style)
 
 
-        # 4. Zaokrąglona ramka (Kontener) dla wykresu
+        # 4. Frame for a plot
         self.plot_container = QFrame()
         self.plot_container.setStyleSheet("""
             QFrame {
@@ -218,7 +218,7 @@ class MainWindow(QMainWindow):
             }
         """)
 
-        # 5. Wykres (Przezroczyste tło, bo siedzi w zaokrąglonej ramce)
+        # 5. Plot
         self.plot_widget = pyqtgraph.PlotWidget()
         self.plot_widget.setBackground('transparent') 
         self.plot_widget.showAxis('left', False)
@@ -230,45 +230,38 @@ class MainWindow(QMainWindow):
 
         self.curve = self.plot_widget.plot(pen=pyqtgraph.mkPen(color=(0, 200, 255), width=2))
 
-        # Wrzucamy wykres do wnętrza zaokrąglonej ramki (kontenera)
         container_layout = QVBoxLayout(self.plot_container)
         container_layout.setContentsMargins(10, 10, 10, 10) 
         container_layout.addWidget(self.plot_widget)  
 
-        # 6. Licznik czasu (Timer) do odświeżania wykresu
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
 
-        # 7. Budowanie głównej struktury layoutów okna
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
 
-        # === GÓRA ===
+
         main_layout.addWidget(self.plot_container, stretch=5)
         
-        # === DÓŁ: Nowy, uporządkowany układ symetryczny ===
-        bottom_layout = QHBoxLayout()
-        bottom_layout.setContentsMargins(20, 10, 20, 20) # Marginesy na dole okna
 
-        # LEWA STRONA (Blok ze statusem i przyciskiem Start)
+        bottom_layout = QHBoxLayout()
+        bottom_layout.setContentsMargins(20, 10, 20, 20) 
+
         left_layout = QVBoxLayout()
         left_layout.addWidget(self.button)
 
-        # ŚRODEK (Tylko napis JARVIS wyśrodkowany idealnie)
         self.model_label = QLabel("JARVIS is NOT LISTENING")
         self.model_label.setFont(font)
-        self.model_label.setAlignment(Qt.AlignmentFlag.AlignCenter) # Środkowanie tekstu w widgetu
+        self.model_label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
 
-        # PRAWA STRONA (Blok z przyciskiem Exit - pusta etykieta u góry dla idealnej symetrii do statusu z lewej)
         right_layout = QVBoxLayout()
         right_layout.addWidget(self.exit_button)
 
-        # Składanie wszystkiego w poziomy dolny pasek z automatycznym rozpychaniem (stretch)
         bottom_layout.addLayout(left_layout, stretch=1)
-        bottom_layout.addWidget(self.model_label, stretch=2) # Środek dostaje więcej przestrzeni
+        bottom_layout.addWidget(self.model_label, stretch=2) 
         bottom_layout.addLayout(right_layout, stretch=1)
 
         main_layout.addLayout(bottom_layout, stretch=1)
@@ -286,30 +279,25 @@ class MainWindow(QMainWindow):
 
 
     def update_plot(self):
-        # 1. Pobranie danych o wykresie i wybudzaniu (Wake Word)
+
         temp = None
         while not prediction_queue.empty():
             temp = prediction_queue.get_nowait()
 
-        # Jeśli nie ma nowego audio, nie robimy nic z wykresem
         if temp is not None:
             audio, pred = temp
             audio = np.array(audio)
             self.curve.setData(audio, skipFiniteCheck=True)
             
-            # Zapisujemy predykcję w pamięci obiektu, aby pamiętać stan między klatkami
             self.last_pred = pred 
         else:
-            # Jeśli brak nowej paczki, przyjmij poprzedni stan lub 0
             if not hasattr(self, 'last_pred'):
                 self.last_pred = 0
 
-        # 2. Pobranie danych o komendach (Command Word) - NIE PRZERYWAMY SEKCJI WYŻEJ!
         temp_1 = None
         while not commands_prediction_queue.empty():
             temp_1 = commands_prediction_queue.get_nowait()
 
-        # 3. Logika wyświetlania tekstów na podstawie stanu maszynowego
         if temp_1 is not None:
             self.curve.setPen(pyqtgraph.mkPen(color=(0, 200, 255), width=2))
             self.plot_container.setStyleSheet("""
@@ -320,31 +308,28 @@ class MainWindow(QMainWindow):
             }
         """)
 
-            # JEŚLI PRZYSZŁA NOWA KOMENDA (Wyświetlamy ją na stałe i zatrzymujemy na chwilę animację listening)
+
             switch_off, turn_on = temp_1
             if switch_off > turn_on and switch_off > 1:
-                self.model_label.setStyleSheet("color: #ff3333;") # Opcjonalnie: czerwony tekst dla off
+                self.model_label.setStyleSheet("color: #ff3333;") 
                 self.model_label.setText("LEDs have been switched off")
             elif switch_off < turn_on and turn_on > 1:
-                self.model_label.setStyleSheet("color: #33ff33;") # Opcjonalnie: zielony tekst dla on
+                self.model_label.setStyleSheet("color: #33ff33;") 
                 self.model_label.setText("LEDs have been turned on")
             else:
                 self.model_label.setStyleSheet("color: #FF8000;")
                 self.model_label.setText("JARVIS didn't understand\nyour command")
             
-            # Tworzymy licznik zamrożenia ekranu komendy (np. na 25 klatek = 2.5 sekundy)
             self.display_freeze_counter = 10 
 
 
         else:
-            # Sprawdzamy czy okno komunikatu o komendzie powinno jeszcze wisieć
             if hasattr(self, 'display_freeze_counter') and self.display_freeze_counter > 0:
                 self.display_freeze_counter -= 1
-                return # Zostawiamy aktualny tekst komendy na ekranie, ignorujemy dalszą animację
+                return 
             
-            # Standardowe zachowanie w zależności od detekcji Jarvis
+
             if self.last_pred > 0.7:
-                # Przywracamy domyślny biały kolor tekstu po zniknięciu komunikatu komendy
                 self.model_label.setStyleSheet("color: #ffffff;")
                 self.curve.setPen(pyqtgraph.mkPen(color=(255, 10, 10), width=2))
                 self.plot_container.setStyleSheet("""
@@ -357,7 +342,6 @@ class MainWindow(QMainWindow):
                 
                 self.model_label.setText("Issue your COMMAND ...")
             else:
-                # Przywracamy domyślny biały kolor tekstu po zniknięciu komunikatu komendy
                 self.model_label.setStyleSheet("color: #ffffff;")
                 self.curve.setPen(pyqtgraph.mkPen(color=(0, 200, 255), width=2))
                 self.plot_container.setStyleSheet("""
@@ -368,7 +352,6 @@ class MainWindow(QMainWindow):
             }
         """)
                 
-                # Animacja "LISTENING ...", wykonuje się TYLKO gdy nie ma wykrytej komendy
                 if self.i % 4 == 0:
                     self.n += 1
                     dots = "." * (self.n % 4)
@@ -383,9 +366,4 @@ window = MainWindow()
 window.show()
 
 app.exec()
-
-
-
-# Sens będzie taki, że jeśli przycisk zostanie wciśnięty, to wyświetli się nam grafika z pyqtgraph, na której będą się wyświetlać właśnie przykładowe randomowe audio co 0.1 s
-
 
